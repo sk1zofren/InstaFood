@@ -1,6 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { themeColors } from '../theme';
+import { useNavigation } from '@react-navigation/native';
+
+
 
 const HomeScreen = ({ navigation }) => {
   const navigateToLogin = () => {

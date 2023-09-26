@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeftIcon } from 'react-native-heroicons/solid';
 import { useNavigation } from '@react-navigation/native';
 
+
 // Import Firebase
 import { auth } from '../firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';

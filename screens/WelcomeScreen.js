@@ -9,6 +9,14 @@ export default function WelcomeScreen() {
   const navigation = useNavigation();
   const [user, setUser] = useState(null);
 
+  const navigateToLogin = () => {
+    navigation.navigate('Login');
+  };
+
+  const navigateToSignUp = () => {
+    navigation.navigate('SignUp');
+  };
+
   useEffect(() => {
     // Vérifiez si un utilisateur est connecté
     const unsubscribe = auth.onAuthStateChanged((authUser) => {
@@ -41,10 +49,7 @@ export default function WelcomeScreen() {
       <SafeAreaView style={styles.container}>
         <View style={styles.content}>
           <Text style={styles.title}>Welcome, {user.email}!</Text>
-          <TouchableOpacity
-            onPress={handleLogout}
-            style={styles.logoutButton}
-          >
+          <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
             <Text style={styles.logoutButtonText}>Log Out</Text>
           </TouchableOpacity>
           {/* Vous pouvez ajouter d'autres éléments ici */}
@@ -53,21 +58,22 @@ export default function WelcomeScreen() {
     );
   }
 
-  // Si l'utilisateur n'est pas connecté, affichez un message d'erreur ou redirigez-le vers la page de connexion
+  // Si l'utilisateur n'est pas connecté, affichez un message d'erreur et les boutons "Login" et "Sign Up" pour rediriger vers les pages correspondantes
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
         <Text style={styles.errorMessage}>You are not logged in.</Text>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('Login')}
-          style={styles.loginButton}
-        >
-          <Text style={styles.loginButtonText}>Log In</Text>
+        <TouchableOpacity style={styles.button} onPress={navigateToLogin}>
+          <Text style={styles.buttonText}>Login</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={navigateToSignUp}>
+          <Text style={styles.buttonText}>Sign Up</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
@@ -105,16 +111,16 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   logoutButton: {
-    backgroundColor: 'red', // Couleur du bouton de déconnexion
+    backgroundColor: 'red',
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 25,
-    marginTop: 20, // Espacement entre le bouton de déconnexion et le reste du contenu
+    marginTop: 20,
   },
   logoutButtonText: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: 'white', // Couleur du texte du bouton de déconnexion
+    color: 'white',
     textAlign: 'center',
   },
 });
