@@ -75,6 +75,7 @@ export default function WelcomeScreen() {
 }
 
 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
