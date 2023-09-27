@@ -11,21 +11,10 @@ import MessageScreen from "./screens/MessageScreen";
 import PostScreen from "./screens/PostScreen";
 import NotificationScreen from "./screens/NotificationScreen";
 import ProfileScreen from "./screens/ProfileScreen";
-import { auth } from './firebase'; // Importez votre configuration Firebase ici
+import { auth } from './firebase';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
-
-function MainStack() {
-  return (
-    <Stack.Navigator initialRouteName="Home">
-      <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="Login" component={LoginScreen} options={{headerShown: false}} />
-      <Stack.Screen name="SignUp" component={SignUpScreen} options={{headerShown: false}} />
-      <Stack.Screen name="Welcome" component={WelcomeScreen} options={{headerShown: false}} />
-    </Stack.Navigator>
-  );
-}
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -44,22 +33,22 @@ export default function App() {
 
     // Nettoyez l'abonnement lors du démontage du composant
     return unsubscribe;
-  }, []); // Cela surveille uniquement l'état de connexion lorsque le composant est monté
+  }, []);
 
   return (
     <NavigationContainer>
-      <Tab.Navigator initialRouteName={user ? "Welcome" : "Home"}>
-        <Tab.Screen
-          name="Welcome"
-          component={MainStack}
-          options={{
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="ios-home" size={size} color={color} />
-            ),
-          }}
-        />
-        {user && (
+      <Tab.Navigator>
+        {user ? (
           <>
+            <Tab.Screen
+              name="Welcome"
+              component={WelcomeScreen}
+              options={{
+                tabBarIcon: ({ color, size }) => (
+                  <Ionicons name="ios-home" size={size} color={color} />
+                ),
+              }}
+            />
             <Tab.Screen
               name="Message"
               component={MessageScreen}
@@ -93,6 +82,36 @@ export default function App() {
               options={{
                 tabBarIcon: ({ color, size }) => (
                   <Ionicons name="ios-person" size={size} color={color} />
+                ),
+              }}
+            />
+          </>
+        ) : (
+          <>
+            <Tab.Screen
+              name="Home"
+              component={HomeScreen}
+              options={{
+                tabBarIcon: ({ color, size }) => (
+                  <Ionicons name="ios-home" size={size} color={color} />
+                ),
+              }}
+            />
+            <Tab.Screen
+              name="Login"
+              component={LoginScreen}
+              options={{
+                tabBarIcon: ({ color, size }) => (
+                  <Ionicons name="ios-log-in" size={size} color={color} />
+                ),
+              }}
+            />
+            <Tab.Screen
+              name="SignUp"
+              component={SignUpScreen}
+              options={{
+                tabBarIcon: ({ color, size }) => (
+                  <Ionicons name="ios-person-add" size={size} color={color} />
                 ),
               }}
             />

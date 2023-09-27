@@ -28,7 +28,7 @@ export default function SignUpScreen() {
       console.log('User signed up:', user.email);
   
       // Rediriger l'utilisateur vers la page de connexion après inscription réussie
-      navigation.navigate('Login');
+      navigation.navigate('Welcome');
     } catch (error) {
       console.error('Sign up error:', error.message);
       // Afficher une erreur à l'utilisateur, par exemple en utilisant une alerte
@@ -53,7 +53,7 @@ export default function SignUpScreen() {
         style={styles.content}
       >
         <View style={styles.form}>
-          <Text style={styles.formTitle}>Sign Up</Text>
+         
           <TextInput
             style={styles.input}
             placeholder='Full Name'

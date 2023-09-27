@@ -1,9 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ImageBackground } from 'react-native';
 import { themeColors } from '../theme';
 import { useNavigation } from '@react-navigation/native';
-
-
 
 const HomeScreen = ({ navigation }) => {
   const navigateToLogin = () => {
@@ -15,22 +13,18 @@ const HomeScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Welcome to MyApp</Text>
-      <TouchableOpacity style={styles.button} onPress={navigateToLogin}>
-        <Text style={styles.buttonText}>Login</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={navigateToSignUp}>
-        <Text style={styles.buttonText}>Sign Up</Text>
-      </TouchableOpacity>
-    </View>
+    <ImageBackground source={require('../assets/back.jpg')} resizeMode="cover" style={styles.backgroundImage}>
+      <View style={styles.container}>
+        <Text style={styles.text}>Welcome to MyApp</Text>
+        {/* Vos autres composants */}
+      </View>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: themeColors.bg, // Utilisation de la couleur de fond depuis le thème
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -40,8 +34,13 @@ const styles = StyleSheet.create({
     color: 'white',
     marginBottom: 20,
   },
+  backgroundImage: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
   button: {
-    backgroundColor: themeColors.primary, // Utilisation de la couleur principale depuis le thème
+    backgroundColor: themeColors.primary,
     padding: 15,
     borderRadius: 10,
     width: 200,
