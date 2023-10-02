@@ -5,10 +5,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeftIcon } from 'react-native-heroicons/solid';
 import { useNavigation } from '@react-navigation/native';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';  // <-- Ajouté
+
 
 
 // Import Firebase
-import { auth } from '../firebase';
+import { auth, db } from '../firebase';
 
 export default function SignUpScreen() {
   const navigation = useNavigation();
@@ -20,21 +22,37 @@ export default function SignUpScreen() {
 
   const handleSignUp = async () => {
     try {
-      // Créer un nouvel utilisateur avec l'email et le mot de passe
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-  
-      // Récupérer l'utilisateur créé
-      const user = userCredential.user;
+      
+      const user = userCredential.user;  // <-- Cette ligne a été déplacée vers le haut
+      const userDocRef = doc(db, 'users', user.uid);
+
+      await setDoc(userDocRef, {
+        fullName: fullName,
+        email: email,
+      });
+
       console.log('User signed up:', user.email);
   
-      // Rediriger l'utilisateur vers la page de connexion après inscription réussie
-      navigation.navigate('Welcome');
+      navigation.navigate('Welcome', { userName: fullName });
     } catch (error) {
       console.error('Sign up error:', error.message);
-      // Afficher une erreur à l'utilisateur, par exemple en utilisant une alerte
-      // ou en affichant un message d'erreur à l'écran
+      // ... gestion des erreurs ...
     }
   };
+
+  // ... (le reste du code pour l'interface utilisateur)
+
+
+
+// ... (styles)
+//Avec ces corrections, votre code devrait maintenant créer correctement un nouvel utilisateur dans Firebase Authentication et ajouter également ce nouvel utilisateur à Firestore. Assurez-vous également que db est correctement exporté depuis votre fichier firebase.js ou l'endroit où vous initialisez votre connexion Firestore.
+
+
+
+
+
+
   
 
   return (

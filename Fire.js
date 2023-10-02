@@ -20,7 +20,9 @@ class Fire {
         const postData = {
             text,
             uid: this.uid,
-            timestamp: this.timestamp
+            timestamp: this.timestamp,
+            userEmail: auth.currentUser.email
+            
         };
 
         if (remoteUri) {

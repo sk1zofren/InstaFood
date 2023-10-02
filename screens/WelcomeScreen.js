@@ -1,127 +1,166 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { themeColors } from '../theme';
-import { useNavigation } from '@react-navigation/native';
-import { auth } from '../firebase'; // Importez votre configuration Firebase ici
+import { View, Text, FlatList, StatusBar, TouchableOpacity } from 'react-native';
+import styled from "styled-components";
+import { getFirestore, collection, onSnapshot, doc } from 'firebase/firestore';
+import { app, auth } from '../firebase';
+import moment from 'moment';
+import { signOut } from 'firebase/auth';
+
+
+
+const db = getFirestore(app);
 
 export default function WelcomeScreen() {
-  const navigation = useNavigation();
-  const [user, setUser] = useState(null);
+   
+  
+    const [posts, setPosts] = useState([]);
+    const [userDetails, setUserDetails] = useState(null);
 
-  const navigateToLogin = () => {
-    navigation.navigate('Login');
-  };
+    useEffect(() => {
+        const unsubscribe = onSnapshot(collection(db, 'posts'), snapshot => {
+            const fetchedPosts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setPosts(fetchedPosts);
+        });
 
-  const navigateToSignUp = () => {
-    navigation.navigate('SignUp');
-  };
+        return () => unsubscribe();
+    }, []);
 
-  useEffect(() => {
-    // Vérifiez si un utilisateur est connecté
-    const unsubscribe = auth.onAuthStateChanged((authUser) => {
-      if (authUser) {
-        // L'utilisateur est connecté, mettez à jour l'état de l'utilisateur
-        setUser(authUser);
-      } else {
-        // Aucun utilisateur n'est connecté, l'état de l'utilisateur est nul
-        setUser(null);
-      }
-    });
+    useEffect(() => {
+      
 
-    // Nettoyez l'abonnement lors du démontage du composant
-    return unsubscribe;
+      const unsubscribe = auth.onAuthStateChanged((user) => {
+          if (user) {
+              const userDocRef = doc(db, 'users', user.uid);
+              onSnapshot(userDocRef, (docSnap) => {
+                  if (docSnap.exists()) {
+                      setUserDetails(docSnap.data());
+                  } else {
+                      console.log("No user document found!");
+                  }
+              });
+          }
+      });
+  
+      return () => unsubscribe();
   }, []);
+  
+  
+ 
 
-  // Fonction pour gérer la déconnexion
-  const handleLogout = async () => {
-    try {
-      await auth.signOut(); // Déconnexion de l'utilisateur
-      navigation.navigate('Login'); // Redirection vers la page de connexion
-    } catch (error) {
-      console.error('Logout error:', error.message);
-    }
-  };
+    const handleSignOut = () => {
+        signOut(auth).then(() => {
+            // Redirection ou action après la déconnexion si nécessaire
+        }).catch((error) => {
+            console.error("Erreur lors de la déconnexion : ", error);
+        });
+    };
 
-  // Si l'utilisateur est connecté, affichez la page de bienvenue
-  if (user) {
+    const renderPost = ({ item }) => {
+      if (!item.userEmail || !item.text || !item.timestamp) {
+        return null;
+      }
+    
+      return (
+        <PostContainer>
+            <PostHeaderContainer>
+                <PostProfilePhoto source={{ uri: item.profileImage }} />
+                <PostInfoContainer>
+                <Text>{userDetails?.fullName || "Anonyme"}</Text>
+
+                    <Text style={{ color: "#c1c3cc", marginTop: 4 }}>
+                        {moment(item.timestamp).fromNow()}
+                    </Text>
+                </PostInfoContainer>
+            </PostHeaderContainer>
+            <Post>
+                <Text>{item.text}</Text>
+                {item.image && <PostPhoto source={{ uri: item.image }} />}
+            </Post>
+        </PostContainer>
+      );
+    };
+
     return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.content}>
-          <Text style={styles.title}>Welcome, {user.email}!</Text>
-          <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
-            <Text style={styles.logoutButtonText}>Log Out</Text>
+      <Container>
+          <TouchableOpacity onPress={handleSignOut} style={{ alignSelf: 'center', marginBottom: 10 }}>
+              <Text style={{ color: '#FF0000' }}>Déconnexion</Text>
           </TouchableOpacity>
-          {/* Vous pouvez ajouter d'autres éléments ici */}
-        </View>
-      </SafeAreaView>
-    );
-  }
-
-  // Si l'utilisateur n'est pas connecté, affichez un message d'erreur et les boutons "Login" et "Sign Up" pour rediriger vers les pages correspondantes
-  return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
-        <Text style={styles.errorMessage}>You are not logged in.</Text>
-        <TouchableOpacity style={styles.button} onPress={navigateToLogin}>
-          <Text style={styles.buttonText}>Login</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={navigateToSignUp}>
-          <Text style={styles.buttonText}>Sign Up</Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+          <FeedContainer>
+              <Text style={{ fontSize: 24, fontWeight: "bold", textAlign: 'center' }}>Feed</Text>
+              <Feed data={posts} renderItem={renderPost} keyExtractor={(item) => item.id.toString()} />
+          </FeedContainer>
+          <StatusBar barStyle="dark-content" />
+      </Container>
   );
 }
 
+// Styles
+const Container = styled(View)`
+    flex: 1;
+    background-color: #ebecf3;
+    padding-top: 64px;
+`;
 
+const FeedContainer = styled(View)`
+    flex: 1;
+`;
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: themeColors.bg,
-  },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginVertical: 20,
-  },
-  title: {
-    color: 'white',
-    fontSize: 32,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  errorMessage: {
-    color: 'white',
-    fontSize: 20,
-    textAlign: 'center',
-    marginBottom: 20,
-  },
-  loginButton: {
-    backgroundColor: 'yellow',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 25,
-  },
-  loginButtonText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: 'gray',
-    textAlign: 'center',
-  },
-  logoutButton: {
-    backgroundColor: 'red',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 25,
-    marginTop: 20,
-  },
-  logoutButtonText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: 'white',
-    textAlign: 'center',
-  },
-});
+const Feed = styled(FlatList)`
+    flex: 1;
+`;
+
+const PostContainer = styled(View)`
+    margin: 16px;
+    background-color: #ffffff;
+    border-radius: 6px;
+    padding: 8px;
+`;
+
+const PostHeaderContainer = styled(View)`
+    flex-direction: row;
+    margin-bottom: 16px;
+    align-items: center;
+`;
+
+const PostProfilePhoto = styled.Image`
+    width: 48px;
+    height: 48px;
+    border-radius: 24px;
+`;
+
+const PostInfoContainer = styled(View)`
+    flex: 1;
+    margin: 0 16px;
+`;
+
+const Options = styled(View)`
+    align-items: flex-end;
+    justify-content: center;
+`;
+
+const Post = styled(View)`
+    margin-left: 64px;
+`;
+
+const PostPhoto = styled.Image`
+    width: 100%;
+    height: 150px;
+    border-radius: 6px;
+    margin-top: 8px;
+`;
+
+const PostDetails = styled(View)`
+    flex-direction: row;
+    margin-top: 8px;
+`;
+
+const PostLikes = styled(View)`
+    flex-direction: row;
+    align-items: center;
+`;
+
+const PostComments = styled(View)`
+    flex-direction: row;
+    align-items: center;
+    margin-left: 16px;
+`;
