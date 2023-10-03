@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StatusBar, TouchableOpacity } from 'react-native';
 import styled from "styled-components";
-import { getFirestore, collection, onSnapshot, doc } from 'firebase/firestore';
+import { getFirestore, collection, onSnapshot, doc, getDoc } from 'firebase/firestore';
 import { app, auth } from '../firebase';
 import moment from 'moment';
 import { signOut } from 'firebase/auth';
@@ -26,23 +26,41 @@ export default function WelcomeScreen() {
     }, []);
 
     useEffect(() => {
-      
-
-      const unsubscribe = auth.onAuthStateChanged((user) => {
-          if (user) {
-              const userDocRef = doc(db, 'users', user.uid);
-              onSnapshot(userDocRef, (docSnap) => {
-                  if (docSnap.exists()) {
-                      setUserDetails(docSnap.data());
-                  } else {
-                      console.log("No user document found!");
+      // Écouter les changements sur la collection "posts"
+      const unsubscribe = onSnapshot(collection(db, 'posts'), async snapshot => {
+  
+          // Transformer chaque document "post" en un objet post avec des détails d'utilisateur (si disponible)
+          const fetchedPosts = await Promise.all(snapshot.docs.map(async docSnapshot => {
+              const postData = { id: docSnapshot.id, ...docSnapshot.data() };
+              
+              if (postData.uid) {
+                  console.log("Vérification du uid: ", postData.uid); // Etape 1
+                  try {
+                      // Récupérer les détails de l'utilisateur associé à ce post
+                      const userDoc = await getDoc(doc(db, 'users', postData.uid));
+                      if (userDoc.exists()) {
+                          postData.userDetails = userDoc.data();
+                          console.log("Détails de l'utilisateur récupérés avec succès: ", userDoc.data()); // Etape 2
+                      } else {
+                          console.log("Aucun document utilisateur trouvé pour l'uid: ", postData.uid);
+                      }
+                  } catch (error) {
+                      console.error("Erreur lors de la récupération du document utilisateur: ", error); // Etape 3 et 4
                   }
-              });
-          }
+              }
+  
+              return postData;
+          }));
+  
+          // Mettre à jour l'état local avec les posts récupérés
+          setPosts(fetchedPosts);
       });
   
+      // Se désabonner de l'écouteur lorsque le composant est démonté
       return () => unsubscribe();
   }, []);
+  
+  
   
   
  
@@ -63,10 +81,9 @@ export default function WelcomeScreen() {
       return (
         <PostContainer>
             <PostHeaderContainer>
-                <PostProfilePhoto source={{ uri: item.profileImage }} />
+               <PostProfilePhoto source={{ uri: item.userDetails?.profilePic || 'favicon.png' }} />
                 <PostInfoContainer>
-                <Text>{userDetails?.fullName || "Anonyme"}</Text>
-
+                    <Text>{item.userDetails?.fullName || "Anonyme"}</Text>
                     <Text style={{ color: "#c1c3cc", marginTop: 4 }}>
                         {moment(item.timestamp).fromNow()}
                     </Text>
@@ -79,6 +96,8 @@ export default function WelcomeScreen() {
         </PostContainer>
       );
     };
+    
+  
 
     return (
       <Container>

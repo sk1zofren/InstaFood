@@ -1,56 +1,91 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput, Button, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, Button, StyleSheet, Image } from 'react-native';
 import { themeColors } from '../theme';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeftIcon } from 'react-native-heroicons/solid';
 import { useNavigation } from '@react-navigation/native';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';  // <-- Ajouté
+import { doc, setDoc } from 'firebase/firestore';
+import * as ImagePicker from 'expo-image-picker';
 
 
 
-// Import Firebase
+
 import { auth, db } from '../firebase';
+import fireInstance from '../Fire';  // Assurez-vous que cela pointe vers votre classe Fire.
 
 export default function SignUpScreen() {
-  const navigation = useNavigation();
+    const navigation = useNavigation();
+    
+    const [fullName, setFullName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [profilePicUri, setProfilePicUri] = useState(null);
 
-  // États pour les champs du formulaire
-  const [fullName, setFullName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
-  const handleSignUp = async () => {
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      
-      const user = userCredential.user;  // <-- Cette ligne a été déplacée vers le haut
-      const userDocRef = doc(db, 'users', user.uid);
-
-      await setDoc(userDocRef, {
-        fullName: fullName,
-        email: email,
-      });
-
-      console.log('User signed up:', user.email);
+    const pickImage = async () => {
+      try {
+          let result = await ImagePicker.launchImageLibraryAsync({
+              mediaTypes: ImagePicker.MediaTypeOptions.Images,
+              allowsEditing: true,
+              aspect: [1, 1],
+              quality: 0.5,
+          });
   
-      navigation.navigate('Welcome', { userName: fullName });
-    } catch (error) {
-      console.error('Sign up error:', error.message);
-      // ... gestion des erreurs ...
-    }
+          if (!result.cancelled) {
+              setProfilePicUri(result.uri);
+          }
+      } catch (error) {
+          console.log("Error @pickImage: ", error);
+      }
   };
 
-  // ... (le reste du code pour l'interface utilisateur)
+  const getPermission = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    return status;
+};
+
+const addProfilePhoto = async () => {
+  const status = await getPermission();
+
+  if (status !== "granted") {
+      alert("We need permission to access your camera roll.");
+      return;
+  }
+
+  pickImage();
+};
 
 
+  
+  
+  
+  
+  
 
-// ... (styles)
-//Avec ces corrections, votre code devrait maintenant créer correctement un nouvel utilisateur dans Firebase Authentication et ajouter également ce nouvel utilisateur à Firestore. Assurez-vous également que db est correctement exporté depuis votre fichier firebase.js ou l'endroit où vous initialisez votre connexion Firestore.
-
-
-
-
+    const handleSignUp = async () => {
+      try {
+          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+          const user = userCredential.user;
+          const userDocRef = doc(db, 'users', user.uid);
+  
+          let profilePicURL = null;
+          if (profilePicUri) {
+              profilePicURL = await fireInstance.uploadPhotoAsync(profilePicUri);
+          }
+  
+          await setDoc(userDocRef, {
+              fullName: fullName,
+              email: email,
+              ...(profilePicURL ? { profilePic: profilePicURL } : {}),
+          });
+  
+          console.log('User signed up:', user.email);
+          navigation.navigate('Welcome', { userName: fullName });
+      } catch (error) {
+          console.error('Sign up error:', error.message);
+      }
+  };
+  
 
 
   
@@ -66,6 +101,13 @@ export default function SignUpScreen() {
             <ArrowLeftIcon size={20} color="black" />
           </TouchableOpacity>
         </View>
+        <TouchableOpacity onPress={addProfilePhoto}>
+                {profilePicUri ? (
+                    <Image source={{ uri: profilePicUri }} style={{ width: 100, height: 100 }} />
+                ) : (
+                    <Text>Select a profile picture</Text>
+                )}
+            </TouchableOpacity>
       </SafeAreaView>
       <View
         style={styles.content}

@@ -1,12 +1,25 @@
 import { app, auth, storage } from "./firebase"; 
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-import { getFirestore, collection, addDoc, doc, setDoc } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, doc, setDoc, getDoc } from 'firebase/firestore';
 
 const db = getFirestore(app); // Pour la version v9+, on initialise Firestore de cette manière.
 
 class Fire {
     addPost = async ({ text, localUri }) => {
         console.log("Début de addPost");
+    
+        const userDocRef = doc(db, 'users', this.uid);
+        let userData = {};
+        try {
+            const docSnap = await getDoc(userDocRef);
+            if (docSnap.exists()) {
+                userData = docSnap.data();
+            } else {
+                console.log("No user document found!");
+            }
+        } catch (error) {
+            console.error("Erreur lors de la récupération des données de l'utilisateur :", error);
+        }
         
         let remoteUri = null;
         if (localUri) {
@@ -16,19 +29,20 @@ class Fire {
         } else {
             console.log("Aucune image à uploader.");
         }
-
+    
         const postData = {
             text,
             uid: this.uid,
             timestamp: this.timestamp,
-            userEmail: auth.currentUser.email
-            
+            userEmail: auth.currentUser.email,
+            fullName: userData.fullName || "Anonyme", // Récupérez le nom complet de userData
+            profilePic: userData.profilePic || 'favicon.png' // Récupérez la photo de profil de userData
         };
-
+    
         if (remoteUri) {
             postData.image = remoteUri;
         }
-
+    
         try {
             const postRef = await addDoc(collection(db, "posts"), postData);
             console.log("Post enregistré avec succès. ID du post:", postRef.id);
@@ -36,6 +50,7 @@ class Fire {
             console.error("Erreur lors de l'enregistrement du post :", e);
         }
     };
+    
 
     uploadPhotoAsync = async uri => {
         const path = `photos/${this.uid}/${Date.now()}.jpg`;
