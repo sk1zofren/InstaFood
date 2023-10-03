@@ -9,8 +9,8 @@ import SignUpScreen from './screens/SignUpScreen';
 import WelcomeScreen from './screens/WelcomeScreen';
 import MessageScreen from "./screens/MessageScreen";
 import PostScreen from "./screens/PostScreen";
-import NotificationScreen from "./screens/NotificationScreen";
-import ProfileScreen from "./screens/ProfileScreen";
+import CreateRecetteScreen from "./screens/CreateRecetteScreen";
+import MyRecetteScreen from "./screens/MyRecetteScreen";
 import { auth } from './firebase';
 
 const Stack = createNativeStackNavigator();
@@ -48,7 +48,7 @@ function MainTabs() {
             component={MessageScreen}
             options={{
               tabBarIcon: ({ color, size }) => (
-                <Ionicons name="ios-chatboxes" size={size} color={color} />
+                <Ionicons name="bookmark-outline" size={size} color={color} />
               ),
             }}
           />
@@ -62,17 +62,17 @@ function MainTabs() {
             }}
           />
           <Tab.Screen
-            name="Notification"
-            component={NotificationScreen}
+            name="CreateRecette"
+            component={CreateRecetteScreen}
             options={{
               tabBarIcon: ({ color, size }) => (
-                <Ionicons name="ios-notifications" size={size} color={color} />
+                <Ionicons name="ios-home" size={size} color={color} />
               ),
             }}
           />
           <Tab.Screen
-            name="Profile"
-            component={ProfileScreen}
+            name="MyRecette"
+            component={MyRecetteScreen}
             options={{
               tabBarIcon: ({ color, size }) => (
                 <Ionicons name="ios-person" size={size} color={color} />
