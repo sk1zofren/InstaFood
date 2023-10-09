@@ -9,6 +9,15 @@ export default class RechercheScreen extends React.Component {
         selectedMeal: null
     }
 
+    componentDidMount() {
+        // Vérifiez si le composant a été ouvert à partir d'une notification
+        if (this.props.route.params && this.props.route.params.recipe) {
+            const { recipe } = this.props.route.params;
+            this.showModal(recipe);
+        }
+    }
+    
+
     handleSearch = async () => {
         const query = encodeURIComponent(this.state.searchText);
         const apiUrl = `https://www.themealdb.com/api/json/v1/1/search.php?s=${query}`;

@@ -18,7 +18,11 @@ import * as Permissions from 'expo-permissions';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
+export const navigationRef = React.createRef();
 
+export function navigate(name, params) {
+  navigationRef.current?.navigate(name, params);
+}
 function MainTabs() {
   const [user, setUser] = useState(null);
 
@@ -122,6 +126,21 @@ function MainTabs() {
 export default function App() {
   const [listenerSet, setListenerSet] = useState(false);
 
+
+  async function getRandomRecipe() {
+    const apiUrl = `https://www.themealdb.com/api/json/v1/1/random.php`;
+
+    try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        return data.meals[0]; // Retournez la première (et unique) recette aléatoire obtenue
+    } catch (error) {
+        console.error("Erreur lors de la récupération d'une recette aléatoire:", error);
+        return null;
+    }
+}
+
+
   // Configuration des écouteurs
   useEffect(() => {
     if (!listenerSet) {
@@ -131,9 +150,22 @@ export default function App() {
         console.log('Une nouvelle notification a été reçue !');
       });
 
-      Notifications.addNotificationResponseReceivedListener(response => {
+      Notifications.addNotificationResponseReceivedListener(async (response) => {
         console.log('Notification interaction:', response);
-      });
+        
+        // Obtenez une recette aléatoire
+        const randomRecipe = await getRandomRecipe();
+        
+        if(randomRecipe && randomRecipe.idMeal) {
+            // Naviguez vers l'écran de recette avec l'ID de recette comme paramètre
+            navigate('Recherche', { recipe: randomRecipe });
+        } else {
+            console.error("Impossible d'obtenir une recette aléatoire");
+        }
+    });
+    
+    
+    
 
       setListenerSet(true);
     }
@@ -156,18 +188,19 @@ export default function App() {
         }
 
         const token = (await Notifications.getExpoPushTokenAsync()).data;
-        console.log("Expo Push Token:", token);
-
+        
+        const randomRecipe = await getRandomRecipe();
         // Planification de la notification
-        await Notifications.scheduleNotificationAsync({
-          content: {
-            title: "Nouvelle notification 📬",
-            body: "Ceci est une notification programmée.",
-            data: { test: "data" }
-          },
-          trigger: { seconds: 900 }
+        if (randomRecipe && randomRecipe.strMeal) {
+          await Notifications.scheduleNotificationAsync({
+              content: {
+                  title: "Recette du jour 🍽️",
+                  body: `A table !!!`,
+                  data: { test: "data" }
+              },
+              trigger: { seconds: 10000 }
         });
-
+      }
       } catch (error) {
         console.error("Error setting up notifications:", error);
       }
@@ -188,7 +221,7 @@ export default function App() {
 
 
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={navigationRef}>
       <Stack.Navigator mode="modal" headerMode="none">
         <Stack.Screen name="Main" component={MainTabs} />
         <Stack.Screen name="postModal" component={PostScreen} />
