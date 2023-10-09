@@ -45,23 +45,24 @@ export default function MyRecetteScreen() {
         return (
             <RecetteContainer onPress={() => toggleRecette(item.id)}>
                 <RecetteHeaderContainer>
-                    <RecetteProfilePhoto source={{ uri: item.userDetails?.profilePic || 'favicon.png' }} />
                     <RecetteInfoContainer>
-                        <Text>{item.title}</Text> {/* Le titre toujours visible */}
+                        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{item.title}</Text>
+                        <Text style={{ color: "#c1c3cc", marginTop: 4 }}>
+                            {moment(item.timestamp).fromNow()}
+                        </Text>
                     </RecetteInfoContainer>
                 </RecetteHeaderContainer>
                 {selectedRecetteId === item.id && (
                     <RecetteContent>
                         <Text>{item.text}</Text>
-                        <Text style={{ color: "#c1c3cc", marginTop: 4 }}>
-                            {moment(item.timestamp).fromNow()}
-                        </Text>
-                        {item.localUri && <RecettePhoto source={{ uri: item.localUri }} />}
+                        {item.image && <RecettePhoto source={{ uri: item.image }} />}
                     </RecetteContent>
                 )}
             </RecetteContainer>
         );
     };
+    
+    
     
     
     

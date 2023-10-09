@@ -5,6 +5,42 @@ import { getFirestore, collection, addDoc, doc, setDoc, getDoc } from 'firebase/
 const db = getFirestore(app); // Pour la version v9+, on initialise Firestore de cette manière.
 
 class Fire {
+
+    addComment = async (postId, commentText) => {
+        const userDocRef = doc(db, 'users', this.uid);
+        let userData = {};
+        
+        try {
+            const docSnap = await getDoc(userDocRef);
+            if (docSnap.exists()) {
+                userData = docSnap.data();
+            } else {
+                console.log("No user document found!");
+            }
+        } catch (error) {
+            console.error("Erreur lors de la récupération des données de l'utilisateur :", error);
+        }
+        
+    
+        const commentData = {
+            text: commentText,
+            uid: this.uid,
+            timestamp: this.timestamp,
+            userEmail: auth.currentUser.email,
+            fullName: userData.fullName || "Anonyme", // Récupérez le nom complet de userData
+            profilePic: userData.profilePic || 'favicon.png' // Récupérez la photo de profil de userData
+        };
+    
+        try {
+            const docRef = await addDoc(collection(db, "posts", postId, "comments"), commentData);
+            console.log("Commentaire ajouté avec succès avec l'ID :", docRef.id);
+            return docRef.id; // Retournez l'ID du commentaire nouvellement ajouté
+        } catch (e) {
+            console.error("Erreur lors de l'ajout du commentaire :", e);
+        }
+    };
+    
+
     addPost = async ({ text, localUri }) => {
         console.log("Début de addPost");
     

@@ -13,6 +13,9 @@ import CreateRecetteScreen from "./screens/CreateRecetteScreen";
 import MyRecetteScreen from "./screens/MyRecetteScreen";
 import { auth } from './firebase';
 
+import * as Notifications from 'expo-notifications';
+import * as Permissions from 'expo-permissions';
+
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -31,7 +34,8 @@ function MainTabs() {
   }, []);
 
   return (
-    <Tab.Navigator>
+    <Tab.Navigator screenOptions={{headerShown:false}}>
+      
       {user ? (
         <>
           <Tab.Screen
@@ -116,6 +120,73 @@ function MainTabs() {
 }
 
 export default function App() {
+  const [listenerSet, setListenerSet] = useState(false);
+
+  // Configuration des écouteurs
+  useEffect(() => {
+    if (!listenerSet) {
+      console.log('Setting up the notification listener...');
+
+      Notifications.addNotificationReceivedListener(notification => {
+        console.log('Une nouvelle notification a été reçue !');
+      });
+
+      Notifications.addNotificationResponseReceivedListener(response => {
+        console.log('Notification interaction:', response);
+      });
+
+      setListenerSet(true);
+    }
+  }, [listenerSet]);
+
+  // Demande de permission et planification de la notification
+  useEffect(() => {
+    async function registerForNotifications() {
+      try {
+        const { status: existingStatus } = await Notifications.getPermissionsAsync();
+        let finalStatus = existingStatus;
+        if (existingStatus !== 'granted') {
+          const { status } = await Notifications.requestPermissionsAsync();
+          finalStatus = status;
+        }
+
+        if (finalStatus !== 'granted') {
+          alert('Notification permissions not granted.');
+          return;
+        }
+
+        const token = (await Notifications.getExpoPushTokenAsync()).data;
+        console.log("Expo Push Token:", token);
+
+        // Planification de la notification
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: "Nouvelle notification 📬",
+            body: "Ceci est une notification programmée.",
+            data: { test: "data" }
+          },
+          trigger: { seconds: 900 }
+        });
+
+      } catch (error) {
+        console.error("Error setting up notifications:", error);
+      }
+    }
+
+    registerForNotifications();
+
+    // Gestionnaire de notifications en arrière-plan
+    Notifications.setNotificationHandler({
+      handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: false,
+      }),
+    });
+  }, []);
+
+
+
   return (
     <NavigationContainer>
       <Stack.Navigator mode="modal" headerMode="none">
