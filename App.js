@@ -7,7 +7,7 @@ import HomeScreen from './screens/HomeScreen';
 import LoginScreen from './screens/LoginScreen';
 import SignUpScreen from './screens/SignUpScreen';
 import WelcomeScreen from './screens/WelcomeScreen';
-import MessageScreen from "./screens/MessageScreen";
+import RechercheScreen from "./screens/RechercheScreen";
 import PostScreen from "./screens/PostScreen";
 import CreateRecetteScreen from "./screens/CreateRecetteScreen";
 import MyRecetteScreen from "./screens/MyRecetteScreen";
@@ -48,8 +48,8 @@ function MainTabs() {
             }}
           />
           <Tab.Screen
-            name="Message"
-            component={MessageScreen}
+            name="Recherche"
+            component={RechercheScreen}
             options={{
               tabBarIcon: ({ color, size }) => (
                 <Ionicons name="bookmark-outline" size={size} color={color} />

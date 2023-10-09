@@ -6,7 +6,7 @@ import { app, auth } from '../firebase';
 import moment from 'moment';
 import { signOut } from 'firebase/auth';
 import Fire from '../Fire';
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, AntDesign } from "@expo/vector-icons";
 
 const db = getFirestore(app);
 
@@ -71,6 +71,21 @@ export default function WelcomeScreen() {
         if (!item.userEmail || !item.text || !item.timestamp) {
             return null;
         }
+        const handleRating = async (postId, ratingValue) => {
+            await Fire.addRating(postId, ratingValue);
+        };
+
+        const renderStars = (rating) => {
+            const stars = [];
+            for(let i = 1; i <= 5; i++) {
+                stars.push(
+                    <TouchableOpacity key={i} onPress={() => handleRating(item.id, i)}>
+                        <AntDesign name={i <= rating ? "star" : "staro"} size={24} color="gold" />
+                    </TouchableOpacity>
+                );
+            }
+            return <View style={{ flexDirection: 'row', marginTop: 10 }}>{stars}</View>;
+        };
 
         const handleAddComment = async (postId) => {
             if (commentText.trim() !== "") {
@@ -146,6 +161,7 @@ export default function WelcomeScreen() {
                     />
                     <Button title="Commenter " onPress={() => handleAddComment(item.id)} />
                 </View> 
+                {renderStars(item.averageRating || 0)}
             </PostContainer>
         );
     };

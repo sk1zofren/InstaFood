@@ -1,10 +1,33 @@
 import { app, auth, storage } from "./firebase"; 
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-import { getFirestore, collection, addDoc, doc, setDoc, getDoc } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, doc, setDoc, getDoc,getDocs,updateDoc } from 'firebase/firestore';
 
 const db = getFirestore(app); // Pour la version v9+, on initialise Firestore de cette manière.
 
 class Fire {
+
+    addRating = async (postId, value) => {
+        if (value < 1 || value > 5) {
+            console.error("Invalid star rating value");
+            return;
+        }
+    
+        const ratingRef = doc(db, 'posts', postId, 'ratings', this.uid);
+        await setDoc(ratingRef, { uid: this.uid, value: value }, { merge: true }); // Changed starValue to value here
+    
+        // Mise à jour de la note moyenne du post et du nombre total de notes.
+        const ratingsSnapshot = await getDocs(collection(db, 'posts', postId, 'ratings'));
+        let totalRating = 0;
+        ratingsSnapshot.forEach(doc => {
+            totalRating += doc.data().value;
+        });
+        const averageRating = totalRating / ratingsSnapshot.size;
+    
+        const postRef = doc(db, 'posts', postId);
+        await updateDoc(postRef, { averageRating: averageRating, ratingsCount: ratingsSnapshot.size });
+    };
+    
+    
 
     addComment = async (postId, commentText) => {
         const userDocRef = doc(db, 'users', this.uid);
