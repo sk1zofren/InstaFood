@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet, TextInput, Button, FlatList, Modal, TouchableOpacity, Image } from "react-native";
 
+
 export default class RechercheScreen extends React.Component {
     state = {
         searchText: '',
@@ -44,14 +45,17 @@ export default class RechercheScreen extends React.Component {
 
         return (
             <View style={styles.container}>
-                <Text style={styles.header}>Trouvez votre recette</Text>
+                
                 <TextInput
                     style={styles.searchBar}
                     value={this.state.searchText}
                     onChangeText={(text) => this.setState({ searchText: text })}
                     placeholder="Recherchez une recette..."
                 />
-                <Button title="Rechercher" onPress={this.handleSearch} color="#5c6bc0" />
+                <TouchableOpacity style={styles.button} onPress={this.handleSearch}>
+    <Text style={styles.buttonText}>Rechercher</Text>
+</TouchableOpacity>
+
                 
                 <FlatList 
                     data={this.state.searchResults}
@@ -75,7 +79,7 @@ export default class RechercheScreen extends React.Component {
                                 <Image source={{uri: selectedMeal.strMealThumb}} style={styles.mealImage} />
                                 <Text style={styles.mealTitle}>{selectedMeal.strMeal}</Text>
                                 <Text>{selectedMeal.strInstructions}</Text>
-                                <Button title="Fermer" onPress={this.hideModal} color="#5c6bc0" />
+                                <Button title="Fermer" onPress={this.hideModal} color={styles.primary.color} />
                             </View>
                         </View>
                     </Modal>
@@ -87,38 +91,65 @@ export default class RechercheScreen extends React.Component {
 }
 
 const styles = StyleSheet.create({
+    button: {
+        backgroundColor: '#5C4033',  // Marron foncé pour le bouton
+        width: 150,                 // Largeur fixe pour le bouton
+        paddingVertical: 8,
+        borderRadius: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+        elevation: 5,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        alignSelf: 'center'         // Centre le bouton horizontalement
+    },
+    buttonText: {
+        color: '#FFFFFF',
+        fontSize: 16,
+        fontWeight: '500',
+    }
+,    
     container: {
         flex: 1,
-        backgroundColor: '#f3f3f3',
-        paddingHorizontal: 20,
-        paddingTop: 50
+        backgroundColor: '#D2B48C',  // Marron clair pour l'arrière-plan
+        paddingHorizontal: 30,
+        paddingTop: 50,
     },
     header: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 20,
-        color: '#5c6bc0'
+        fontSize: 28,
+        fontWeight: '700',
+        marginBottom: 40,
+        color: '#FFFFFF',
+        textAlign: 'center',
     },
     searchBar: {
         width: '100%',
-        padding: 15,
-        borderColor: '#ddd',
+        padding: 12,
+        borderColor: '#F5F5DC',
         borderWidth: 1,
-        borderRadius: 5,
-        marginBottom: 20,
-        backgroundColor: 'white',
-        elevation: 3
+        borderRadius: 10,
+        marginBottom: 30,
+        backgroundColor: '#FFFFFF', 
+        elevation: 5,
+        fontSize: 16,
     },
     listItem: {
-        padding: 15,
-        backgroundColor: 'white',
-        marginTop: 10,
-        borderRadius: 5,
-        elevation: 3
+        padding: 20,
+        backgroundColor: '#FFFFFF',
+        marginVertical: 8,
+        borderRadius: 8,
+        elevation: 5,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
     },
     listText: {
-        fontSize: 16,
-        fontWeight: 'bold'
+        fontSize: 18,
+        fontWeight: '500',
+        color: '#8B4513'
     },
     modalContainer: {
         flex: 1,
@@ -127,20 +158,32 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0,0,0,0.7)'
     },
     modalContent: {
-        width: '80%',
-        padding: 20,
-        backgroundColor: 'white',
-        borderRadius: 10,
-        elevation: 5
+        width: '85%',
+        padding: 25,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 15,
+        elevation: 5,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
     },
     mealTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 10
+        fontSize: 22,
+        fontWeight: '600',
+        marginBottom: 20,
+        color: '#8B4513',
+        textAlign: 'center',
     },
     mealImage: {
         width: '100%',
-        height: 200,
-        marginBottom: 20
+        height: 220,
+        borderRadius: 10,
+        marginBottom: 25,
+    },
+    primary: {
+        color: '#5C4033',  // Marron foncé pour le bouton
+        fontSize: 18,
+        fontWeight: '500',
     }
 });

@@ -60,41 +60,46 @@ export default class PostScreen extends React.Component {
             <SafeAreaView style={styles.container}>
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
-                        <Ionicons name="md-arrow-back" size={24} color="#D8D9DB"></Ionicons>
+                        <Ionicons name="md-arrow-back" size={24} style={styles.backButton}></Ionicons>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={this.handlePost}>
-                        <Text style={{ fontWeight: "500" }}>Post</Text>
-                    </TouchableOpacity>
-                </View>
+                    <TouchableOpacity onPress={this.handlePost} style={styles.postButton}>
+    <Text style={styles.postButtonText}>Post</Text>
+</TouchableOpacity>
 
+                </View>
+    
                 <View style={styles.inputContainer}>
-                    <Image source={require("../assets/tempAvatar.png")} style={styles.avatar}></Image>
+                    
                     <TextInput
                         autoFocus={true}
                         multiline={true}
                         numberOfLines={4}
-                        style={{ flex: 1 }}
+                        style={styles.textInput}
                         placeholder="Want to share something?"
+                        placeholderTextColor="#A89F91" // Marron moyen pour le texte du placeholder
                         onChangeText={text => this.setState({ text })}
                         value={this.state.text}
                     ></TextInput>
                 </View>
-
+    
                 <TouchableOpacity style={styles.photo} onPress={this.pickImage}>
-                    <Ionicons name="md-camera" size={32} color="#D8D9DB"></Ionicons>
-                </TouchableOpacity>
+                <Ionicons name="md-camera" size={32} color="#A89F91"></Ionicons>
 
+                </TouchableOpacity>
+    
                 <View style={{ marginHorizontal: 32, marginTop: 32, height: 150 }}>
-                    <Image source={{ uri: this.state.image }} style={{ width: "100%", height: "100%" }}></Image>
+                    <Image source={{ uri: this.state.image }} style={{ width: "100%", height: "100%", borderRadius: 6 }}></Image>
                 </View>
             </SafeAreaView>
         );
     }
+    
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1
+        flex: 1,
+        backgroundColor: '#DAC3A7', // Marron clair pour l'arrière-plan
     },
     header: {
         flexDirection: "row",
@@ -102,21 +107,47 @@ const styles = StyleSheet.create({
         paddingHorizontal: 32,
         paddingVertical: 12,
         borderBottomWidth: 1,
-        borderBottomColor: "#D8D9DB"
+        borderBottomColor: "#A89F91" // Marron moyen pour la bordure
     },
     inputContainer: {
         margin: 32,
-        flexDirection: "row"
+        flexDirection: "row",
+        backgroundColor: '#FFFDFC', // Couleur très claire pour le fond
+        padding: 8,
+        borderRadius: 6
     },
     avatar: {
         width: 48,
         height: 48,
-        borderRadius: 24,
-        marginRight: 16
+        borderRadius: 24
     },
     photo: {
         alignItems: "flex-end",
         marginHorizontal: 32
+    },
+    textInput: {
+        color: '#5C4033', // Marron foncé pour le texte
+        flex: 1
+    },
+    postButton: {
+        fontWeight: "500",
+        color: '#5C4033' // Marron foncé pour le texte du bouton
+    },
+    backButton: {
+        color: '#5C4033' // Marron foncé pour l'icône de retour
+    },
+    postButton: {
+        backgroundColor: '#5A2D0C',  // Marron très foncé (chocolat foncé)
+        padding: 8,
+        borderRadius: 6,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    
+    
+    postButtonText: {
+        color: 'white',  // Pour une meilleure lisibilité sur fond marron
+        fontWeight: 'bold',
     }
+    
 });
-

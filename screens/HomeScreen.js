@@ -15,7 +15,7 @@ const HomeScreen = ({ navigation }) => {
   return (
     <ImageBackground source={require('../assets/back.jpg')} resizeMode="cover" style={styles.backgroundImage}>
       <View style={styles.container}>
-        <Text style={styles.text}>Welcome to MyApp</Text>
+        <Text style={styles.text}>InstaFood</Text>
         {/* Vos autres composants */}
       </View>
     </ImageBackground>

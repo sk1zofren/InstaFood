@@ -7,6 +7,8 @@ import { useNavigation } from '@react-navigation/native';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import * as ImagePicker from 'expo-image-picker';
+import defaultAvatar from '../assets/avata.png';
+
 
 
 
@@ -92,127 +94,160 @@ const addProfilePhoto = async () => {
 
   return (
     <View style={styles.container}>
-      <SafeAreaView style={styles.header}>
-        <View style={styles.headerIcon}>
-          <TouchableOpacity
-            onPress={() => navigation.goBack()}
-            style={styles.backButton}
-          >
-            <ArrowLeftIcon size={20} color="black" />
-          </TouchableOpacity>
-        </View>
-        <TouchableOpacity onPress={addProfilePhoto}>
-                {profilePicUri ? (
-                    <Image source={{ uri: profilePicUri }} style={{ width: 100, height: 100 }} />
-                ) : (
-                    <Text>Select a profile picture</Text>
-                )}
-            </TouchableOpacity>
-      </SafeAreaView>
-      <View
-        style={styles.content}
-      >
+      
+      <TouchableOpacity 
+          style={styles.imagePlaceholderContainer}
+          onPress={addProfilePhoto}>
+          {profilePicUri ? (
+            <Image source={{ uri: profilePicUri }} style={styles.profileImage} />
+          ) : (
+            <Image source={defaultAvatar} style={styles.profileImage} />
+          )}
+        </TouchableOpacity>
+        <SafeAreaView style={styles.header}>
+      
+      <View style={styles.content}>
         <View style={styles.form}>
-         
           <TextInput
             style={styles.input}
-            placeholder='Full Name'
+            placeholder='Pseudo'
             value={fullName}
             onChangeText={text => setFullName(text)}
           />
           <TextInput
             style={styles.input}
-            placeholder='Email Address'
+            placeholder='Addresse email'
             value={email}
             onChangeText={text => setEmail(text)}
           />
           <TextInput
             style={styles.input}
-            placeholder='Password'
+            placeholder='Mot de passe'
             secureTextEntry
             value={password}
             onChangeText={text => setPassword(text)}
           />
-          <Button
-            title="Sign Up"
-            onPress={handleSignUp}
-            color="purple"
-          />
+          <TouchableOpacity style={styles.signupButton} onPress={handleSignUp}>
+            <Text style={styles.signupButtonText}>S'inscrire</Text>
+          </TouchableOpacity>
         </View>
-        <Text style={styles.orText}>Or</Text>
-      
+        <Text style={styles.orText}>Ou</Text>
         <View style={styles.loginLink}>
-          <Text style={styles.loginText}>Already have an account?</Text>
+          <Text style={styles.loginText}>Vous avez déja un compte?</Text>
           <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-            <Text style={styles.loginLinkText}>Login</Text>
+            <Text style={styles.loginLinkText}>Connectez-vous</Text>
           </TouchableOpacity>
         </View>
       </View>
+      </SafeAreaView>
     </View>
   );
 }
 
+// ... autres imports ...
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: themeColors.bg,
+    backgroundColor: '#EAD9C0',  // Beige plus foncé
+  },
+   imagePlaceholderContainer: {
+    alignSelf: 'center',
+    borderWidth: 2,
+    borderColor: '#5A3511',
+    borderRadius: 50,
+    width: 100,
+    height: 100,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 120,
+  },
+  profileImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 50,
+  },
+  defaultProfileImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 50,
+    backgroundColor: '#DDC3A5',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  signupButton: {
+    backgroundColor: '#5A3511',
+    paddingVertical: 10,
+    borderRadius: 8,
+    width: '80%',
+    alignSelf: 'center',
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  signupButton: {
+    backgroundColor: '#5A3511',
+    paddingVertical: 15,
+    borderRadius: 10,
+    width: '80%',
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  signupButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'flex-start',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 10,
+    backgroundColor: '#EAD9C0',
   },
   headerIcon: {
-    backgroundColor: 'white',
+    backgroundColor: '#5A3511',  // Marron plus foncé
     padding: 10,
     borderRadius: 20,
-    marginLeft: 10,
   },
   backButton: {
     padding: 5,
   },
   content: {
     flex: 1,
-    backgroundColor: 'white',
-    borderTopLeftRadius: 50,
-    borderTopRightRadius: 50,
-    paddingHorizontal: 20,
-    paddingVertical: 30,
+    backgroundColor: '#EAD9C0',
+    paddingHorizontal: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   form: {
-    marginBottom: 20,
-  },
-  formTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    width: '100%',
     marginBottom: 20,
   },
   input: {
-    backgroundColor: 'lightgray',
+    backgroundColor: '#D0C2A7',  // Beige légèrement plus foncé pour les inputs
     paddingHorizontal: 15,
     paddingVertical: 10,
     borderRadius: 10,
     marginBottom: 15,
   },
   signupButton: {
-    backgroundColor: themeColors.primary,
+    backgroundColor: '#5A3511',  // Marron plus foncé
     paddingVertical: 15,
     borderRadius: 10,
+    width: '100%',
+    alignItems: 'center',
   },
   signupButtonText: {
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
-    textAlign: 'center',
   },
   orText: {
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
     marginVertical: 20,
-  },
-  socialButtons: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+    color: '#5A3511',  // Marron plus foncé
   },
   loginLink: {
     flexDirection: 'row',
@@ -220,11 +255,11 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   loginText: {
-    color: 'gray',
+    color: '#5A3511',  // Marron plus foncé
     fontWeight: 'bold',
   },
   loginLinkText: {
-    color: themeColors.primary,
+    color: '#5A3511',  // Marron plus foncé
     fontWeight: 'bold',
     marginLeft: 5,
   },

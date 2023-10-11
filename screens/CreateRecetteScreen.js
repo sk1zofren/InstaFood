@@ -44,7 +44,7 @@ export default class CrateRecetteScreen extends React.Component {
     render() {
         return (
             <ScrollView style={styles.container}>
-                <Text style={styles.title}>Créer une nouvelle recette</Text>
+              
                 <TextInput 
                     placeholder="Titre de la recette"
                     style={styles.textInput}
@@ -65,7 +65,9 @@ export default class CrateRecetteScreen extends React.Component {
                         <Text style={styles.imagePickerText}>Choisir une image pour la recette</Text>
                     </TouchableOpacity>
                 )}
-                <Button title="Ajouter la recette" onPress={this.handleAddRecette} color="#FF6347" />
+                <TouchableOpacity style={styles.button} onPress={this.handleAddRecette}>
+                    <Text style={styles.buttonText}>Ajouter la recette</Text>
+                </TouchableOpacity>
             </ScrollView>
         );
     }
@@ -75,31 +77,31 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        backgroundColor: "#F5F5F5"
+        backgroundColor: "#DAC3A7" // Marron clair pour l'arrière-plan
     },
     title: {
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 20,
-        color: "#333"
+        color: '#5C4033' // Marron foncé pour les textes
     },
     textInput: {
         width: "100%",
         padding: 15,
-        borderColor: "#ccc",
+        borderColor: "#A89F91", // Marron moyen
         borderWidth: 1,
         marginBottom: 10,
         borderRadius: 5,
-        backgroundColor: "white"
+        backgroundColor: "#FFFDFC" // Couleur très claire pour le fond du TextInput
     },
     textArea: {
         width: "100%",
         padding: 15,
-        borderColor: "#ccc",
+        borderColor: "#A89F91",
         borderWidth: 1,
         marginBottom: 10,
         borderRadius: 5,
-        backgroundColor: "white",
+        backgroundColor: "#FFFDFC",
         height: 150,
         textAlignVertical: 'top'
     },
@@ -113,11 +115,27 @@ const styles = StyleSheet.create({
         padding: 15,
         borderRadius: 5,
         borderWidth: 1,
-        borderColor: "#ccc",
+        borderColor: "#A89F91",
         marginBottom: 10,
-        alignItems: 'center'
+        alignItems: 'center',
+        backgroundColor: "#FFFDFC"
     },
     imagePickerText: {
-        color: "#333"
+        color: "#5C4033"
+    },
+    button: {
+        backgroundColor: '#5C4033',  
+        paddingVertical: 8,
+        borderRadius: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+        elevation: 5,
+        width: 150,
+        alignSelf: 'center'
+    },
+    buttonText: {
+        color: '#FFFFFF',
+        fontSize: 16,
+        fontWeight: '500',
     }
 });

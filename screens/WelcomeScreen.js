@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, FlatList, StatusBar, TouchableOpacity, TextInput, Button } from 'react-native';
+import { Image,View, Text, FlatList, StatusBar, TouchableOpacity, TextInput, Button } from 'react-native';
 import styled from "styled-components";
 import { getFirestore, collection, onSnapshot, doc, getDoc, getDocs } from 'firebase/firestore';
 import { app, auth } from '../firebase';
@@ -7,59 +7,87 @@ import moment from 'moment';
 import { signOut } from 'firebase/auth';
 import Fire from '../Fire';
 import { Ionicons, AntDesign } from "@expo/vector-icons";
+import { themeColors } from '../theme';
+import { SignoutIcon } from 'react-native-heroicons/solid';
+
+
 
 const db = getFirestore(app);
 
 export default function WelcomeScreen() {
 
     const feedRef = useRef(null);
-    const [commentText, setCommentText] = useState('');
+    const [commentTexts, setCommentTexts] = useState({});
+
     const [posts, setPosts] = useState([]);
     const [userDetails, setUserDetails] = useState(null);
     const [expandedPostId, setExpandedPostId] = useState(null);
 
     useEffect(() => {
         const unsubscribe = onSnapshot(collection(db, 'posts'), async snapshot => {
-            const fetchedPosts = await Promise.all(snapshot.docs.map(async docSnapshot => {
-                const postData = { id: docSnapshot.id, ...docSnapshot.data() };
-
-                const commentsSnapshot = await getDocs(collection(doc(db, 'posts', docSnapshot.id), 'comments'));
-                postData.comments = commentsSnapshot.docs.map(commentDoc => ({ id: commentDoc.id, ...commentDoc.data() }));
-
-                if (postData.uid) {
-                    const userDoc = await getDoc(doc(db, 'users', postData.uid));
-                    if (userDoc.exists()) {
-                        postData.userDetails = userDoc.data();
-                    }
-                }
-                return postData;
-            }));
+            const fetchedPosts = await fetchAllDetails(snapshot);
             setPosts(fetchedPosts);
         });
         return () => unsubscribe();
     }, []);
 
-    const handleAddComment = async (postId) => {
-        if (commentText.trim() !== "") {
-            await Fire.addComment(postId, commentText);
-            setCommentText('');
-
-            const newComments = await fetchCommentsForPost(postId);
-            setPosts(prevPosts => {
-                return prevPosts.map(post => 
-                    post.id === postId 
-                        ? { ...post, comments: newComments }
-                        : post
-                );
-            });
+    const handleCommentChange = (postId, text) => {
+        setCommentTexts(prev => ({ ...prev, [postId]: text }));
+    };
+    
+    const fetchAllDetails = async (snapshot) => {
+        const userCache = {};
+        const fetchedPosts = [];
+    
+        for (let docSnapshot of snapshot.docs) {
+            const postData = { id: docSnapshot.id, ...docSnapshot.data() };
+    
+            // Get comments
+            postData.comments = await fetchCommentsForPost(docSnapshot.id, userCache);
+    
+            // Get user details
+            if (postData.uid) {
+                if (userCache[postData.uid]) {
+                    postData.userDetails = userCache[postData.uid];
+                } else {
+                    const userDoc = await getDoc(doc(db, 'users', postData.uid));
+                    if (userDoc.exists()) {
+                        postData.userDetails = userDoc.data();
+                        userCache[postData.uid] = userDoc.data();
+                    }
+                }
+            }
+            fetchedPosts.push(postData);
         }
+        return fetchedPosts;
     };
-
-    const fetchCommentsForPost = async (postId) => {
+    
+    const fetchCommentsForPost = async (postId, userCache) => {
         const commentsSnapshot = await getDocs(collection(doc(db, 'posts', postId), 'comments'));
-        
-        return commentsSnapshot.docs.map(commentDoc => ({ id: commentDoc.id, ...commentDoc.data() }));
+        const comments = [];
+        for (let commentDoc of commentsSnapshot.docs) {
+            const commentData = { id: commentDoc.id, ...commentDoc.data() };
+    
+            // Get user details for the comment
+            if (commentData.uid) {
+                if (userCache[commentData.uid]) {
+                    commentData.userDetails = userCache[commentData.uid];
+                } else {
+                    const userDoc = await getDoc(doc(db, 'users', commentData.uid));
+                    if (userDoc.exists()) {
+                        commentData.userDetails = userDoc.data();
+                        userCache[commentData.uid] = userDoc.data();
+                    }
+                }
+            }
+            comments.push(commentData);
+        }
+        return comments;
     };
+    
+    
+    
+    
 
     const handleSignOut = () => {
         signOut(auth).catch((error) => {
@@ -77,22 +105,35 @@ export default function WelcomeScreen() {
 
         const renderStars = (rating) => {
             const stars = [];
-            for(let i = 1; i <= 5; i++) {
+            for (let i = 1; i <= 5; i++) {
+                const isSelected = i <= rating;
                 stars.push(
-                    <TouchableOpacity key={i} onPress={() => handleRating(item.id, i)}>
-                        <AntDesign name={i <= rating ? "star" : "staro"} size={24} color="gold" />
+                    <TouchableOpacity 
+                        key={i} 
+                        onPress={() => {
+                            handleRating(item.id, i);
+                            // Ajoutez ici l'animation de l'étoile si vous le souhaitez
+                        }} 
+                        style={{ marginHorizontal: 5 }}
+                    >
+                        {isSelected ? 
+                            <ActiveStar name="star" size={26} /> :
+                            <InactiveStar name="staro" size={26} />
+                        }
                     </TouchableOpacity>
                 );
             }
-            return <View style={{ flexDirection: 'row', marginTop: 10 }}>{stars}</View>;
+            return <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>{stars}</View>;
         };
+        
+        
 
         const handleAddComment = async (postId) => {
-            if (commentText.trim() !== "") {
-                const newCommentId = await Fire.addComment(postId, commentText);  // Vous récupérez déjà cet ID
-                setCommentText(''); // Réinitialisez le champ de saisie après l'ajout du commentaire
-                
-                // Si newCommentId est valide, rafraîchissez les commentaires pour ce post spécifique
+            const commentText = commentTexts[postId];
+            if (commentText && commentText.trim() !== "") {
+                const newCommentId = await Fire.addComment(postId, commentText);
+                setCommentTexts(prev => ({ ...prev, [postId]: '' })); // Modifié ici
+        
                 if (newCommentId) {
                     const commentDocSnapshot = await getDoc(doc(db, 'posts', postId, 'comments', newCommentId));
                     if (commentDocSnapshot.exists()) {
@@ -112,83 +153,94 @@ export default function WelcomeScreen() {
         
         
     
-    return (
-        <PostContainer>
-            <PostHeaderContainer>
-               <PostProfilePhoto source={{ uri: item.userDetails?.profilePic || 'favicon.png' }} />
-                <PostInfoContainer>
-                    <Text>{item.userDetails?.fullName || "Anonyme"}</Text>
-                    <Text style={{ color: "#c1c3cc", marginTop: 4 }}>
-                        {moment(item.timestamp).fromNow()}
-                    </Text>
-                </PostInfoContainer>
-            </PostHeaderContainer>
-            <Post>
-                <Text>{item.text}</Text>
-                {item.image && <PostPhoto source={{ uri: item.image }} />}
-            </Post>
-
-            <TouchableOpacity 
-            
-            onPress={() => {
-                console.log('Icone de commentaire cliquée');
-                setExpandedPostId(item.id === expandedPostId ? null : item.id);
-             }} 
+  
+        return (
+            <PostContainer>
+                <PostHeaderContainer>
+                    <PostProfilePhoto source={{ uri: item.userDetails?.profilePic }} />
+                    <PostInfoContainer>
+                        <Text style={{ color: "white", fontWeight: 'bold' }}>{item.userDetails?.fullName || "Anonyme"}</Text>
+                        <Text style={{ color: "black", marginTop: 4, fontSize: 10 }}>
+                            {moment(item.timestamp).fromNow()}
+                        </Text>
+                    </PostInfoContainer>
+                </PostHeaderContainer>
+                <Post>
+                    <Text>{item.text}</Text>
                     
-                    style={{ alignSelf: 'center', marginTop: 10 }}
-                >
-                    <Ionicons name="ios-chatbubbles" size={24} color="black" />
-                </TouchableOpacity>
-{console.log("Commentaires pour le post", item.id, ":", item.comments)
-}
+                    {/* Ajout de l'interaction sur l'image du post */}
+                    <TouchableOpacity onPress={() => {
+                        console.log('Image du post cliquée');
+                        setExpandedPostId(item.id === expandedPostId ? null : item.id);
+                    }}>
+                        {item.image && <PostPhoto source={{ uri: item.image }} />}
+                    </TouchableOpacity>
+                    
+                </Post>
+                
+                
+    
+                
                 {item.id === expandedPostId && ( 
                     <>
                         <FlatList 
-                            data={item.comments} 
-                            
-                            renderItem={({ item }) => <Text>{item.text}</Text>} 
-                            keyExtractor={(comment) => comment.id.toString()} 
-                        />
+    data={item.comments} 
+    renderItem={({ item: comment }) => (
+        <CommentContainer>
+            <CommentProfilePhoto source={{ uri: comment.userDetails?.profilePic }} />
+            <View style={{ flex: 1 }}>
+                <Text style={{ fontWeight: 'bold' }}>{comment.userDetails?.fullName || 'Anonyme'}: </Text>
+                <Text>{comment.text}</Text>
+            </View>
+        </CommentContainer>
+    )}
+    
+    keyExtractor={(comment) => comment.id.toString()} 
+/>
+
                     </>
                 )}
+    
+    <View style={{ flexDirection: 'row', marginTop: 10, alignItems: 'center' }}>
+    <CommentInput
+    value={commentTexts[item.id] || ''}
+    onChangeText={text => setCommentTexts(prev => ({ ...prev, [item.id]: text }))}
+    placeholder="Ajouter un commentaire..."
+/>
 
-<View style={{ flexDirection: 'row', marginTop: 10, alignItems: 'center' }}>
-                    <TextInput 
-                        value={commentText}
-                        onChangeText={text => setCommentText(text)}
-                        placeholder="Ajouter un commentaire..."
-                        style={{ flex: 1, borderColor: 'gray', borderWidth: 1, borderRadius: 5, paddingHorizontal: 10 }}
-                    />
-                    <Button title="Commenter " onPress={() => handleAddComment(item.id)} />
-                </View> 
+                    <StyledButton onPress={() => handleAddComment(item.id)}>
+                        <ButtonText>Commenter</ButtonText>
+                    </StyledButton>
+                </View>
+     
                 {renderStars(item.averageRating || 0)}
             </PostContainer>
         );
+    
     };
     
   
 
     return (
-      <Container>
-          <TouchableOpacity onPress={handleSignOut} style={{ alignSelf: 'center', marginBottom: 10 }}>
-              <Text style={{ color: '#FF0000' }}>Déconnexion</Text>
-          </TouchableOpacity>
-          <FeedContainer>
-                <Text style={{ fontSize: 24, fontWeight: "bold", textAlign: 'center' }}>Feed</Text>
-                <Feed data={posts} renderItem={renderPost} keyExtractor={(item) => item.id.toString()} />
-            </FeedContainer>
-            
-            <StatusBar barStyle="dark-content" />
-        </Container>
+        <Container>
+        <StyledSignoutButton onPress={handleSignOut}>
+            <Ionicons name="log-out" size={35} color="#5A3511" />
+        </StyledSignoutButton>
+        <FeedContainer>
+            <Text style={{ fontSize: 15, fontWeight: "bold", textAlign: 'center', marginBottom: 20 }}></Text>
+            <Feed data={posts} renderItem={renderPost} keyExtractor={(item) => item.id.toString()} />
+        </FeedContainer>
+        <StatusBar barStyle="dark-content" />
+    </Container>
     );
+    
 }
 
-// Styles
 
 
 const Container = styled(View)`
     flex: 1;
-    background-color: #ebecf3;
+    background-color: #EAD9C0; 
     padding-top: 64px;
 `;
 
@@ -202,7 +254,7 @@ const Feed = styled(FlatList)`
 
 const PostContainer = styled(View)`
     margin: 16px;
-    background-color: #ffffff;
+    background-color: #D0C2A7; 
     border-radius: 6px;
     padding: 8px;
 `;
@@ -213,7 +265,7 @@ const PostHeaderContainer = styled(View)`
     align-items: center;
 `;
 
-const PostProfilePhoto = styled.Image`
+const PostProfilePhoto = styled(Image)`
     width: 48px;
     height: 48px;
     border-radius: 24px;
@@ -224,16 +276,27 @@ const PostInfoContainer = styled(View)`
     margin: 0 16px;
 `;
 
-const Options = styled(View)`
-    align-items: flex-end;
-    justify-content: center;
-`;
-
 const Post = styled(View)`
     margin-left: 64px;
 `;
 
-const PostPhoto = styled.Image`
+const CommentContainer = styled(View)`
+    flex-direction: row;
+    background-color: #E8DED2; 
+    border-radius: 12px;
+    padding: 8px;
+    margin-vertical: 4px;
+    align-items: center;
+`;
+
+const CommentProfilePhoto = styled(Image)`
+    width: 32px;
+    height: 32px;
+    border-radius: 16px;
+    margin-right: 8px;
+`;
+
+const PostPhoto = styled(Image)`
     width: 100%;
     height: 150px;
     border-radius: 6px;
@@ -255,3 +318,82 @@ const PostComments = styled(View)`
     align-items: center;
     margin-left: 16px;
 `;
+
+const LogoutButton = styled(TouchableOpacity)`
+    align-self: center;
+    margin-bottom: 10px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    background-color: #5A3511;
+    shadow-color: #000;
+    shadow-offset: 0 2px;
+
+    shadow-opacity: 0.2;
+    shadow-radius: 4px;
+`;
+
+const CommentInput = styled(TextInput)`
+    flex: 1;
+    margin-right: 8px;
+    padding: 8px 12px;
+    
+    
+    borderRadius: 15px;
+    backgroundColor: white;
+    shadow-color: #000;
+    shadow-offset: 0 2px;
+    shadow-opacity: 0.1;
+    shadow-radius: 2px;
+`;
+const CommentButton = styled(Button)`
+    background-color: #5A3511;
+    border-radius: 15px;
+    padding: 8px 12px;
+`;
+
+const StyledButton = styled.TouchableOpacity`
+    background-color: #5A3511;
+    padding: 10px 20px;
+    border-radius: 25px;  
+    margin-left: 10px;
+    justify-content: center;
+    align-items: center;
+    shadow-color: #000;
+    shadow-opacity: 0.25;
+    shadow-radius: 3.84px;
+    elevation: 5;  
+`;
+
+const ButtonText = styled.Text`
+    color: #fff;
+    font-weight: bold;
+`;
+
+const StyledSignoutButton = styled.TouchableOpacity`
+    position: absolute;
+    top: 40px; 
+    right: 5px; 
+    background-color: transparent;
+    padding: 10px;
+    border-radius: 25px;
+    justify-content: center;
+    align-items: center;
+    shadow-color: #000;
+    shadow-opacity: 0.25;
+    shadow-radius: 3.84px;
+    elevation: 5;
+`;
+
+const ActiveStar = styled(AntDesign)`
+    color: gold;
+`;
+
+const InactiveStar = styled(AntDesign)`
+    color: lightgray;
+`;
+
+
+
+
+// ... The rest of the code ...
+

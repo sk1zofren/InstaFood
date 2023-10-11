@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { View, Text, focused,TouchableOpacity, TextInput, Button, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -38,83 +39,93 @@ function MainTabs() {
   }, []);
 
   return (
-    <Tab.Navigator screenOptions={{headerShown:false}}>
+    <Tab.Navigator 
+    screenOptions={{headerShown:false}}>
       
       {user ? (
         <>
           <Tab.Screen
-            name="Welcome"
+            name="o"
             component={WelcomeScreen}
             options={{
-              tabBarIcon: ({ color, size }) => (
-                <Ionicons name="ios-home" size={size} color={color} />
+              tabBarLabel: () => null,
+              tabBarIcon: ({ focused, size }) => (
+                <Ionicons name="people" size={size} color={focused ? '#5A3511' : 'gray'} />
               ),
             }}
           />
           <Tab.Screen
-            name="Recherche"
+           name="i"
             component={RechercheScreen}
             options={{
-              tabBarIcon: ({ color, size }) => (
-                <Ionicons name="bookmark-outline" size={size} color={color} />
-              ),
+              tabBarLabel: () => null,
+              tabBarIcon: ({ focused, size }) => (
+                <Ionicons name="search" size={size} color={focused ? '#5A3511' : 'gray'} />
+            ),
             }}
           />
           <Tab.Screen
-            name="Post"
+           name="u"
             component={PostScreen}
             options={{
-              tabBarIcon: ({ color, size }) => (
-                <Ionicons name="ios-add-circle" size={size} color={color} />
-              ),
+              tabBarLabel: () => null,
+              tabBarIcon: ({ focused, size }) => (
+                <Ionicons name="send" size={size} color={focused ? '#5A3511' : 'gray'} />
+            ),
             }}
           />
           <Tab.Screen
-            name="CreateRecette"
+name="y"
             component={CreateRecetteScreen}
             options={{
-              tabBarIcon: ({ color, size }) => (
-                <Ionicons name="ios-home" size={size} color={color} />
-              ),
+              tabBarLabel: () => null,
+              tabBarIcon: ({ focused, size }) => (
+                <Ionicons name="add" size={size} color={focused ? '#5A3511' : 'gray'} />
+            ),
             }}
           />
           <Tab.Screen
-            name="MyRecette"
+           name="t"
             component={MyRecetteScreen}
             options={{
-              tabBarIcon: ({ color, size }) => (
-                <Ionicons name="ios-person" size={size} color={color} />
-              ),
+              tabBarLabel: () => null,
+              tabBarIcon: ({ focused, size }) => (
+                <Ionicons name="pizza" size={size} color={focused ? '#5A3511' : 'gray'} />
+            ),
             }}
           />
         </>
       ) : (
         <>
           <Tab.Screen
-            name="Home"
+             name="r"
             component={HomeScreen}
             options={{
-              tabBarIcon: ({ color, size }) => (
-                <Ionicons name="ios-home" size={size} color={color} />
-              ),
+              tabBarLabel: () => null,
+              tabBarIcon: ({ focused, size }) => (
+                <Ionicons name="home" size={size} color={focused ? '#5A3511' : 'gray'} />
+            ),
+            
             }}
           />
           <Tab.Screen
-            name="Login"
+           name="a"
             component={LoginScreen}
             options={{
-              tabBarIcon: ({ color, size }) => (
-                <Ionicons name="ios-log-in" size={size} color={color} />
-              ),
+              tabBarLabel: () => null,
+              tabBarIcon: ({ focused, size }) => (
+                <Ionicons name="log-in" size={size} color={focused ? '#5A3511' : 'gray'} />
+            ),
             }}
           />
           <Tab.Screen
-            name="SignUp"
+           name="e"
             component={SignUpScreen}
             options={{
-              tabBarIcon: ({ color, size }) => (
-                <Ionicons name="ios-person-add" size={size} color={color} />
-              ),
+              tabBarLabel: () => null,
+              tabBarIcon: ({ focused, size }) => (
+                <Ionicons name="person-add" size={size} color={focused ? '#5A3511' : 'gray'} />
+            ),
             }}
           />
         </>
@@ -198,7 +209,7 @@ export default function App() {
                   body: `A table !!!`,
                   data: { test: "data" }
               },
-              trigger: { seconds: 10000 }
+              trigger: { seconds: 20 }
         });
       }
       } catch (error) {
@@ -222,10 +233,11 @@ export default function App() {
 
   return (
     <NavigationContainer ref={navigationRef}>
-      <Stack.Navigator mode="modal" headerMode="none">
-        <Stack.Screen name="Main" component={MainTabs} />
-        <Stack.Screen name="postModal" component={PostScreen} />
-      </Stack.Navigator>
+      <Stack.Navigator mode="modal" headerMode="none" screenOptions={{ headerShown: false }}>
+    <Stack.Screen name="Main" component={MainTabs} />
+    <Stack.Screen name="postModal" component={PostScreen} />
+</Stack.Navigator>
+
     </NavigationContainer>
   );
 }

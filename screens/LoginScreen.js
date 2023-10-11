@@ -32,66 +32,51 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.container}>
-      <SafeAreaView style={styles.header}>
-        <View style={styles.headerIcon}>
-          <TouchableOpacity
-            onPress={() => navigation.goBack()}
-            style={styles.backButton}
-          >
-            <ArrowLeftIcon size={20} color="black" />
-          </TouchableOpacity>
+        <View style={styles.content}>
+           
+            <TextInput
+                style={styles.input}
+                placeholder='Adresse email'
+                value={email}
+                onChangeText={text => setEmail(text)}
+                keyboardType="email-address"
+                autoCapitalize="none"
+            />
+            <TextInput
+                style={styles.input}
+                placeholder='Mot de passe'
+                secureTextEntry
+                value={password}
+                onChangeText={text => setPassword(text)}
+            />
+            <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+                <Text style={styles.loginButtonText}>Se connecter</Text>
+            </TouchableOpacity>
+            <Text style={styles.orText}>Ou</Text>
+            <View style={styles.signupLink}>
+                <Text style={styles.signupText}>Pas encore inscrit ?</Text>
+                <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+                    <Text style={styles.signupLinkText}> Inscrivez-vous</Text>
+                </TouchableOpacity>
+            </View>
         </View>
-      </SafeAreaView>
-      <View
-        style={styles.content}
-      >
-        <View style={styles.form}>
-          
-          <TextInput
-            style={styles.input}
-            placeholder='Email Address'
-            value={email}
-            onChangeText={text => setEmail(text)}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder='Password'
-            secureTextEntry
-            value={password}
-            onChangeText={text => setPassword(text)}
-          />
-          <Button
-  title="Login"
-  onPress={handleLogin} // Appel de la fonction handleLogin
-  color="purple"
-/>
-
-        </View>
-        <Text style={styles.orText}>Or</Text>
-        <View style={styles.signupLink}>
-          <Text style={styles.signupText}>Don't have an account?</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
-            <Text style={styles.signupLinkText}> Sign Up</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
     </View>
-  );
+);
 }
 
-
+// ... le reste du code ...
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: themeColors.bg,
+    backgroundColor: '#EAD9C0',  // Beige plus foncé
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
   },
   headerIcon: {
-    backgroundColor: 'white',
+    backgroundColor: '#5A3511', // Marron plus foncé
     padding: 10,
     borderRadius: 20,
     marginLeft: 10,
@@ -101,11 +86,10 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    backgroundColor: 'white',
-    borderTopLeftRadius: 50,
-    borderTopRightRadius: 50,
-    paddingHorizontal: 20,
-    paddingVertical: 30,
+    backgroundColor: '#EAD9C0',
+    paddingHorizontal: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   form: {
     marginBottom: 20,
@@ -116,22 +100,24 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   input: {
-    backgroundColor: 'lightgray',
+    backgroundColor: '#D0C2A7', // Un ton légèrement plus foncé pour les entrées
     paddingHorizontal: 15,
     paddingVertical: 10,
     borderRadius: 10,
     marginBottom: 15,
+    width: 250,
   },
   loginButton: {
-    backgroundColor: themeColors.primary,
+    backgroundColor: '#5A3511', // Marron plus foncé
     paddingVertical: 15,
     borderRadius: 10,
+    width: 250,
+    alignItems: 'center',
   },
   loginButtonText: {
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
-    textAlign: 'center',
   },
   signupLink: {
     flexDirection: 'row',
@@ -139,11 +125,11 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   signupText: {
-    color: 'gray',
+    color: '#5A3511', // Marron plus foncé
     fontWeight: 'bold',
   },
   signupLinkText: {
-    color: themeColors.primary,
+    color: '#5A3511', // Marron plus foncé
     fontWeight: 'bold',
     marginLeft: 5,
   },
@@ -152,5 +138,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginVertical: 20,
+    color: '#5A3511', // Marron plus foncé
   }
 });
+
+

@@ -46,27 +46,22 @@ export default function MyRecetteScreen() {
             <RecetteContainer onPress={() => toggleRecette(item.id)}>
                 <RecetteHeaderContainer>
                     <RecetteInfoContainer>
-                        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{item.title}</Text>
-                        <Text style={{ color: "#c1c3cc", marginTop: 4 }}>
+                        <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#5C4033' }}>{item.title}</Text>
+                        <Text style={{ color: "#A89F91", marginTop: 4 }}>
                             {moment(item.timestamp).fromNow()}
                         </Text>
                     </RecetteInfoContainer>
                 </RecetteHeaderContainer>
                 {selectedRecetteId === item.id && (
                     <RecetteContent>
-                        <Text>{item.text}</Text>
+                        <Text style={{ color: '#5C4033' }}>{item.text}</Text>
                         {item.image && <RecettePhoto source={{ uri: item.image }} />}
                     </RecetteContent>
                 )}
             </RecetteContainer>
         );
     };
-    
-    
-    
-    
-    
-    
+
     return (
         <Container>
             <RecettesFeed data={recettes} renderItem={renderRecette} keyExtractor={(item) => item.id.toString()} />
@@ -77,7 +72,7 @@ export default function MyRecetteScreen() {
 // Styles
 const Container = styled.View`
     flex: 1;
-    background-color: #ebecf3;
+    background-color: #DAC3A7; 
     padding-top: 16px;
 `;
 
@@ -87,7 +82,7 @@ const RecettesFeed = styled(FlatList)`
 
 const RecetteContainer = styled(TouchableOpacity)`
     margin: 16px;
-    background-color: #ffffff;
+    background-color: #FFFDFC; 
     border-radius: 6px;
     padding: 8px;
 `;
