@@ -9,6 +9,7 @@ import Fire from '../Fire';
 import { Ionicons, AntDesign } from "@expo/vector-icons";
 import { themeColors } from '../theme';
 import { SignoutIcon } from 'react-native-heroicons/solid';
+import * as ImagePicker from 'expo-image-picker';
 
 
 
@@ -16,9 +17,12 @@ const db = getFirestore(app);
 
 export default function WelcomeScreen() {
 
+
+
+
     const feedRef = useRef(null);
     const [commentTexts, setCommentTexts] = useState({});
-
+    const [commentImageUri, setCommentImageUri] = useState(null);
     const [posts, setPosts] = useState([]);
     const [userDetails, setUserDetails] = useState(null);
     const [expandedPostId, setExpandedPostId] = useState(null);
@@ -126,19 +130,33 @@ export default function WelcomeScreen() {
             return <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>{stars}</View>;
         };
         
+        const pickImage = async () => {
+            let result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+                aspect: [4, 3],
+                quality: 1,
+            });
         
+            console.log(result);
+        
+            if (!result.cancelled) {
+                setCommentImageUri(result.uri);
+            }
+        };
 
         const handleAddComment = async (postId) => {
             const commentText = commentTexts[postId];
             if (commentText && commentText.trim() !== "") {
-                const newCommentId = await Fire.addComment(postId, commentText);
-                setCommentTexts(prev => ({ ...prev, [postId]: '' })); // Modifié ici
-        
+                // Assurez-vous que commentImageUri est défini avec la bonne URL de l'image.
+                const newCommentId = await Fire.addComment(postId, commentText, commentImageUri);
+                setCommentTexts(prev => ({ ...prev, [postId]: '' }));
+                
                 if (newCommentId) {
                     const commentDocSnapshot = await getDoc(doc(db, 'posts', postId, 'comments', newCommentId));
                     if (commentDocSnapshot.exists()) {
                         const newCommentData = { id: commentDocSnapshot.id, ...commentDocSnapshot.data() };
-                        
+                        console.log("New Comment Data:", newCommentData); // Log de débogage
                         setPosts(prevPosts => {
                             return prevPosts.map(post => 
                                 post.id === postId 
@@ -150,6 +168,7 @@ export default function WelcomeScreen() {
                 }
             }
         };
+        
         
         
     
@@ -182,24 +201,35 @@ export default function WelcomeScreen() {
     
                 
                 {item.id === expandedPostId && ( 
-                    <>
-                        <FlatList 
-    data={item.comments} 
-    renderItem={({ item: comment }) => (
-        <CommentContainer>
-            <CommentProfilePhoto source={{ uri: comment.userDetails?.profilePic }} />
-            <View style={{ flex: 1 }}>
-                <Text style={{ fontWeight: 'bold' }}>{comment.userDetails?.fullName || 'Anonyme'}: </Text>
-                <Text>{comment.text}</Text>
-            </View>
-        </CommentContainer>
-    )}
-    
-    keyExtractor={(comment) => comment.id.toString()} 
-/>
+                <>
+                    <FlatList 
+                        data={item.comments} 
+                        renderItem={({ item: comment }) => (
+                            <CommentContainer>
+                                <CommentProfilePhoto source={{ uri: comment.userDetails?.profilePic }} />
+                                <View style={{ flex: 1 }}>
+                                    <Text style={{ fontWeight: 'bold' }}>{comment.userDetails?.fullName || 'Anonyme'}: </Text>
+                                    <Text>{comment.text}</Text>
+                                   {console.log(comment)}
+                                    {/* Display comment image if exists */}
+                                    {comment.imageUrl && (
+                                        
+                                        <TouchableOpacity onPress={() => {
+                                            console.log('Comment image clicked');
+                                        }}>
+                                            <PostPhoto source={{ uri: comment.imageUrl }} />
+                                          
+                                        </TouchableOpacity>
+                                    )}
+                                </View>
+                            </CommentContainer>
+                        )}
+                        keyExtractor={(comment) => comment.id.toString()} 
+                    />
+                </>
+            )}
 
-                    </>
-                )}
+            
     
     <View style={{ flexDirection: 'row', marginTop: 10, alignItems: 'center' }}>
     <CommentInput
@@ -207,6 +237,9 @@ export default function WelcomeScreen() {
     onChangeText={text => setCommentTexts(prev => ({ ...prev, [item.id]: text }))}
     placeholder="Ajouter un commentaire..."
 />
+<StyledButton onPress={pickImage}>
+        <ButtonText>Choisir une image</ButtonText>
+    </StyledButton>
 
                     <StyledButton onPress={() => handleAddComment(item.id)}>
                         <ButtonText>Commenter</ButtonText>

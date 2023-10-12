@@ -1,5 +1,4 @@
-Reduire le texte des recettes dans la recherche prcq sa déborde
-Améliorer le design
+
 
 - Système de tag
 - Dans le Système de commenatire mettre la possibilté de reponsre avec des photos

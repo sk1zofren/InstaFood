@@ -29,10 +29,10 @@ class Fire {
     
     
 
-    addComment = async (postId, commentText) => {
+    addComment = async (postId, commentText, commentImageUri = null) => {
         const userDocRef = doc(db, 'users', this.uid);
         let userData = {};
-        
+    
         try {
             const docSnap = await getDoc(userDocRef);
             if (docSnap.exists()) {
@@ -43,25 +43,36 @@ class Fire {
         } catch (error) {
             console.error("Erreur lors de la récupération des données de l'utilisateur :", error);
         }
-        
+    
+        let commentImageUrl = null;
+        if (commentImageUri) {
+            console.log("Tentative d'upload de l'image du commentaire...");
+            commentImageUrl = await this.uploadPhotoAsync(commentImageUri);
+            console.log("Image du commentaire uploadée avec succès, URL:", commentImageUrl);
+        }
     
         const commentData = {
             text: commentText,
             uid: this.uid,
             timestamp: this.timestamp,
             userEmail: auth.currentUser.email,
-            fullName: userData.fullName || "Anonyme", // Récupérez le nom complet de userData
-            profilePic: userData.profilePic || 'favicon.png' // Récupérez la photo de profil de userData
+            fullName: userData.fullName || "Anonyme",
+            profilePic: userData.profilePic || 'favicon.png'
         };
+    
+        if (commentImageUrl) {
+            commentData.imageUrl = commentImageUrl;
+        }
     
         try {
             const docRef = await addDoc(collection(db, "posts", postId, "comments"), commentData);
             console.log("Commentaire ajouté avec succès avec l'ID :", docRef.id);
-            return docRef.id; // Retournez l'ID du commentaire nouvellement ajouté
+            return docRef.id;
         } catch (e) {
             console.error("Erreur lors de l'ajout du commentaire :", e);
         }
     };
+    
     
 
     addPost = async ({ text, localUri }) => {
