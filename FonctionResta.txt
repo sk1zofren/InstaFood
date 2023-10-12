@@ -1,6 +1,0 @@
-
-
-- Système de tag
-- Dans le Système de commenatire mettre la possibilté de reponsre avec des photos
-- Nettoyer le code 
-- Quand je commente je dois recharger l'app pour voir le pseudo et la photo de profil de l'user 

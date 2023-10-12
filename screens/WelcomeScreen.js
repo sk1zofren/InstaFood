@@ -38,6 +38,19 @@ export default function WelcomeScreen() {
     const handleCommentChange = (postId, text) => {
         setCommentTexts(prev => ({ ...prev, [postId]: text }));
     };
+
+    const fetchUserDetails = async (uid, userCache) => {
+        if (userCache[uid]) {
+            return userCache[uid];
+        } else {
+            const userDoc = await getDoc(doc(db, 'users', uid));
+            if (userDoc.exists()) {
+                userCache[uid] = userDoc.data();
+                return userDoc.data();
+            }
+            return null; // ou une structure d'utilisateur par défaut, si vous le souhaitez.
+        }
+    };
     
     const fetchAllDetails = async (snapshot) => {
         const userCache = {};
@@ -72,17 +85,9 @@ export default function WelcomeScreen() {
         for (let commentDoc of commentsSnapshot.docs) {
             const commentData = { id: commentDoc.id, ...commentDoc.data() };
     
-            // Get user details for the comment
+            // Récupération des détails de l'utilisateur pour le commentaire
             if (commentData.uid) {
-                if (userCache[commentData.uid]) {
-                    commentData.userDetails = userCache[commentData.uid];
-                } else {
-                    const userDoc = await getDoc(doc(db, 'users', commentData.uid));
-                    if (userDoc.exists()) {
-                        commentData.userDetails = userDoc.data();
-                        userCache[commentData.uid] = userDoc.data();
-                    }
-                }
+                commentData.userDetails = await fetchUserDetails(commentData.uid, userCache);
             }
             comments.push(commentData);
         }
@@ -148,15 +153,16 @@ export default function WelcomeScreen() {
         const handleAddComment = async (postId) => {
             const commentText = commentTexts[postId];
             if (commentText && commentText.trim() !== "") {
-                // Assurez-vous que commentImageUri est défini avec la bonne URL de l'image.
                 const newCommentId = await Fire.addComment(postId, commentText, commentImageUri);
                 setCommentTexts(prev => ({ ...prev, [postId]: '' }));
-                
+                    
                 if (newCommentId) {
                     const commentDocSnapshot = await getDoc(doc(db, 'posts', postId, 'comments', newCommentId));
                     if (commentDocSnapshot.exists()) {
                         const newCommentData = { id: commentDocSnapshot.id, ...commentDocSnapshot.data() };
-                        console.log("New Comment Data:", newCommentData); // Log de débogage
+                        if (newCommentData.uid) {
+                            newCommentData.userDetails = await fetchUserDetails(newCommentData.uid, {});
+                        }
                         setPosts(prevPosts => {
                             return prevPosts.map(post => 
                                 post.id === postId 
@@ -168,7 +174,6 @@ export default function WelcomeScreen() {
                 }
             }
         };
-        
         
         
     
