@@ -43,7 +43,8 @@ export default class CrateRecetteScreen extends React.Component {
 
     render() {
         return (
-            <ScrollView style={styles.container}>
+            <ScrollView contentContainerStyle={styles.container}>
+
               
                 <TextInput 
                     placeholder="Titre de la recette"
@@ -77,65 +78,75 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        backgroundColor: "#DAC3A7" // Marron clair pour l'arrière-plan
+        backgroundColor: "#DAC3A7",
+        justifyContent: 'center', // Pour centrer les éléments
     },
     title: {
-        fontSize: 24,
+        fontSize: 28,
         fontWeight: 'bold',
-        marginBottom: 20,
-        color: '#5C4033' // Marron foncé pour les textes
+        marginBottom: 30,
+        color: '#5C4033',
+        alignSelf: 'center'
     },
     textInput: {
         width: "100%",
         padding: 15,
-        borderColor: "#A89F91", // Marron moyen
+        borderColor: "#A89F91",
         borderWidth: 1,
-        marginBottom: 10,
-        borderRadius: 5,
-        backgroundColor: "#FFFDFC" // Couleur très claire pour le fond du TextInput
+        marginBottom: 20,
+        borderRadius: 10,
+        backgroundColor: "#FFFDFC",
+        fontSize: 16,
+        alignSelf: 'center'
     },
     textArea: {
         width: "100%",
         padding: 15,
         borderColor: "#A89F91",
         borderWidth: 1,
-        marginBottom: 10,
-        borderRadius: 5,
+        marginBottom: 20,
+        borderRadius: 10,
         backgroundColor: "#FFFDFC",
-        height: 150,
-        textAlignVertical: 'top'
+        height: 180,
+        textAlignVertical: 'top',
+        fontSize: 16,
+        alignSelf: 'center'
     },
     recipeImage: {
-        width: '100%',
-        height: 200,
-        borderRadius: 10,
-        marginBottom: 10
+        width: '90%',
+        height: 250,
+        borderRadius: 15,
+        marginBottom: 20,
+        alignSelf: 'center'
     },
     imagePicker: {
         padding: 15,
-        borderRadius: 5,
+        borderRadius: 10,
         borderWidth: 1,
         borderColor: "#A89F91",
-        marginBottom: 10,
+        marginBottom: 20,
         alignItems: 'center',
-        backgroundColor: "#FFFDFC"
+        backgroundColor: "#FFFDFC",
+        alignSelf: 'center'
     },
     imagePickerText: {
-        color: "#5C4033"
+        color: "#5C4033",
+        fontSize: 16,
     },
     button: {
-        backgroundColor: '#5C4033',  
-        paddingVertical: 8,
-        borderRadius: 20,
+        backgroundColor: '#5C4033',
+        paddingVertical: 12,
+        borderRadius: 25,
         alignItems: 'center',
         justifyContent: 'center',
         elevation: 5,
-        width: 150,
-        alignSelf: 'center'
+        width: '60%',
+        alignSelf: 'center',
+        marginTop: 20
     },
     buttonText: {
         color: '#FFFFFF',
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: '500',
     }
 });

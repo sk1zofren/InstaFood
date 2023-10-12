@@ -75,7 +75,7 @@ export default class PostScreen extends React.Component {
                         multiline={true}
                         numberOfLines={4}
                         style={styles.textInput}
-                        placeholder="Want to share something?"
+                        placeholder="Postez votre recette?"
                         placeholderTextColor="#A89F91" // Marron moyen pour le texte du placeholder
                         onChangeText={text => this.setState({ text })}
                         value={this.state.text}

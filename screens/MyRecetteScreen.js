@@ -73,7 +73,7 @@ export default function MyRecetteScreen() {
 const Container = styled.View`
     flex: 1;
     background-color: #DAC3A7; 
-    padding-top: 16px;
+    padding-top: 20px;  
 `;
 
 const RecettesFeed = styled(FlatList)`
@@ -81,36 +81,41 @@ const RecettesFeed = styled(FlatList)`
 `;
 
 const RecetteContainer = styled(TouchableOpacity)`
-    margin: 16px;
+    margin: 20px;  
     background-color: #FFFDFC; 
-    border-radius: 6px;
-    padding: 8px;
+    border-radius: 8px;
+    padding: 12px;
+    shadow-color: #000;
+    shadow-offset: { width: 0; height: 2 };
+    shadow-opacity: 0.25;
+    shadow-radius: 4px;
+    elevation: 5;
 `;
 
 const RecetteHeaderContainer = styled.View`
     flex-direction: row;
-    margin-bottom: 16px;
+    margin-bottom: 20px;  
     align-items: center;
 `;
 
 const RecetteProfilePhoto = styled.Image`
-    width: 48px;
-    height: 48px;
-    border-radius: 24px;
+    width: 50px; 
+    height: 50px;
+    border-radius: 25px;
 `;
 
 const RecetteInfoContainer = styled.View`
     flex: 1;
-    margin: 0 16px;
+    margin-left: 20px; 
 `;
 
 const RecetteContent = styled.View`
-    margin-left: 64px;
+    margin-left: 70px;  
 `;
 
 const RecettePhoto = styled.Image`
     width: 100%;
-    height: 150px;
-    border-radius: 6px;
-    margin-top: 8px;
+    height: 160px;  
+    border-radius: 8px;
+    margin-top: 10px;  
 `;
