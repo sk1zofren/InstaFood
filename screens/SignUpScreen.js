@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput, Button, StyleSheet, Image } from 'react-native';
-import { themeColors } from '../theme';
+
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeftIcon } from 'react-native-heroicons/solid';
 import { useNavigation } from '@react-navigation/native';
@@ -18,7 +18,8 @@ import fireInstance from '../Fire';  // Assurez-vous que cela pointe vers votre 
 
 export default function SignUpScreen() {
     const navigation = useNavigation();
-    
+    const [errorMessage, setErrorMessage] = useState(null);
+
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -56,41 +57,35 @@ const addProfilePhoto = async () => {
 
   pickImage();
 };
+ 
+const handleSignUp = async () => {
+  if (fullName.trim() === '' || email.trim() === '' || password.trim() === '') {
+      setErrorMessage('Veuillez remplir tous les champs.');
+      return;
+  }
 
+  try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      const userDocRef = doc(db, 'users', user.uid);
 
-  
-  
-  
-  
-  
-
-    const handleSignUp = async () => {
-      try {
-          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-          const user = userCredential.user;
-          const userDocRef = doc(db, 'users', user.uid);
-  
-          let profilePicURL = null;
-          if (profilePicUri) {
-              profilePicURL = await fireInstance.uploadPhotoAsync(profilePicUri);
-          }
-  
-          await setDoc(userDocRef, {
-              fullName: fullName,
-              email: email,
-              ...(profilePicURL ? { profilePic: profilePicURL } : {}),
-          });
-  
-          console.log('User signed up:', user.email);
-          navigation.navigate('Welcome', { userName: fullName });
-      } catch (error) {
-          console.error('Sign up error:', error.message);
+      let profilePicURL = null;
+      if (profilePicUri) {
+          profilePicURL = await fireInstance.uploadPhotoAsync(profilePicUri);
       }
-  };
-  
 
+      await setDoc(userDocRef, {
+          fullName: fullName,
+          email: email,
+          ...(profilePicURL ? { profilePic: profilePicURL } : {}),
+      });
 
-  
+      console.log('User signed up:', user.email);
+      navigation.navigate('Welcome', { userName: fullName });
+  } catch (error) {
+      setErrorMessage('Adresse e-mail ou mot de passe non valide.');
+  }
+};
 
   return (
     <View style={styles.container}>
@@ -127,6 +122,8 @@ const addProfilePhoto = async () => {
             value={password}
             onChangeText={text => setPassword(text)}
           />
+          <Text style={{ color: 'red', marginBottom: 10, textAlign: 'center' }}>{errorMessage}</Text>
+
           <TouchableOpacity style={styles.signupButton} onPress={handleSignUp}>
             <Text style={styles.signupButtonText}>S'inscrire</Text>
           </TouchableOpacity>

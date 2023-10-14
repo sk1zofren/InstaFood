@@ -7,7 +7,6 @@ import moment from 'moment';
 import { signOut } from 'firebase/auth';
 import Fire from '../Fire';
 import { Ionicons, AntDesign } from "@expo/vector-icons";
-import { themeColors } from '../theme';
 import { SignoutIcon } from 'react-native-heroicons/solid';
 import * as ImagePicker from 'expo-image-picker';
 
@@ -215,7 +214,7 @@ export default function WelcomeScreen() {
                                 <View style={{ flex: 1 }}>
                                     <Text style={{ fontWeight: 'bold' }}>{comment.userDetails?.fullName || 'Anonyme'}: </Text>
                                     <Text>{comment.text}</Text>
-                                   {console.log(comment)}
+                                 
                                     {/* Display comment image if exists */}
                                     {comment.imageUrl && (
                                         
@@ -391,8 +390,8 @@ const CommentButton = styled(Button)`
 
 const StyledButton = styled.TouchableOpacity`
     background-color: #5A3511;
-    padding: 10px 20px;
-    border-radius: 25px;  
+    padding: 2px 5px;            
+    border-radius: 10px;          
     margin-left: 10px;
     justify-content: center;
     align-items: center;
@@ -401,6 +400,7 @@ const StyledButton = styled.TouchableOpacity`
     shadow-radius: 3.84px;
     elevation: 5;  
 `;
+
 
 const ButtonText = styled.Text`
     color: #fff;

@@ -16,10 +16,15 @@ import { auth } from './firebase';
 
 import * as Notifications from 'expo-notifications';
 import * as Permissions from 'expo-permissions';
+import { LogBox } from 'react-native';
+
+
+
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 export const navigationRef = React.createRef();
+
 
 export function navigate(name, params) {
   navigationRef.current?.navigate(name, params);
@@ -45,7 +50,7 @@ function MainTabs() {
       {user ? (
         <>
           <Tab.Screen
-            name="o"
+            name="Welcome"
             component={WelcomeScreen}
             options={{
               tabBarLabel: () => null,
@@ -55,7 +60,7 @@ function MainTabs() {
             }}
           />
           <Tab.Screen
-           name="i"
+           name="Recherche"
             component={RechercheScreen}
             options={{
               tabBarLabel: () => null,
@@ -137,7 +142,7 @@ name="y"
 export default function App() {
   const [listenerSet, setListenerSet] = useState(false);
 
-
+  LogBox.ignoreAllLogs();
   async function getRandomRecipe() {
     const apiUrl = `https://www.themealdb.com/api/json/v1/1/random.php`;
 
@@ -146,7 +151,7 @@ export default function App() {
         const data = await response.json();
         return data.meals[0]; // Retournez la première (et unique) recette aléatoire obtenue
     } catch (error) {
-        console.error("Erreur lors de la récupération d'une recette aléatoire:", error);
+        
         return null;
     }
 }
@@ -171,7 +176,7 @@ export default function App() {
             // Naviguez vers l'écran de recette avec l'ID de recette comme paramètre
             navigate('Recherche', { recipe: randomRecipe });
         } else {
-            console.error("Impossible d'obtenir une recette aléatoire");
+           
         }
     });
     
@@ -198,7 +203,8 @@ export default function App() {
           return;
         }
 
-        const token = (await Notifications.getExpoPushTokenAsync()).data;
+        const token = await getExpoPushTokenAsync({ projectId: 'monappmobile-8f2a4' });
+
         
         const randomRecipe = await getRandomRecipe();
         // Planification de la notification
@@ -213,7 +219,7 @@ export default function App() {
         });
       }
       } catch (error) {
-        console.error("Error setting up notifications:", error);
+       
       }
     }
 

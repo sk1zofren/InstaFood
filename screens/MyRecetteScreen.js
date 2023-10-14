@@ -2,12 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { Text, FlatList, TouchableOpacity, Image } from 'react-native';
 import styled from "styled-components";
 import { getFirestore, collection, onSnapshot, doc, getDoc } from 'firebase/firestore';
-import { app } from '../firebase';
+import { app,auth } from '../firebase';
 import moment from 'moment';
 
 const db = getFirestore(app);
 
 export default function MyRecetteScreen() {
+   
+    
+
+    const currentUserUID = auth.currentUser?.uid;  // Déplacé à l'intérieur de la fonction
    
     const [recettes, setRecettes] = useState([]);
     const [selectedRecetteId, setSelectedRecetteId] = useState(null);  // Pour gérer l'ouverture/fermeture
@@ -16,7 +20,7 @@ export default function MyRecetteScreen() {
         const unsubscribe = onSnapshot(collection(db, 'recettes'), async snapshot => {
             const fetchedRecettes = await Promise.all(snapshot.docs.map(async docSnapshot => {
                 const recetteData = { id: docSnapshot.id, ...docSnapshot.data() };
-                
+    
                 if (recetteData.uid) {
                     try {
                         const userDoc = await getDoc(doc(db, 'users', recetteData.uid));
@@ -27,15 +31,20 @@ export default function MyRecetteScreen() {
                         console.error("Erreur lors de la récupération du document utilisateur: ", error);
                     }
                 }
-
+    
                 return recetteData;
             }));
             
-            setRecettes(fetchedRecettes);
+            console.log("All Recettes:", fetchedRecettes);  // Déplacez le console.log ici
+    
+            const userRecettes = fetchedRecettes.filter(recette => recette.uid === currentUserUID);  // Filtrez les recettes ici  
+    
+            setRecettes(userRecettes);
         });
-
+    
         return () => unsubscribe();
     }, []);
+    
 
     const toggleRecette = id => {
         setSelectedRecetteId(prevId => (prevId === id ? null : id));

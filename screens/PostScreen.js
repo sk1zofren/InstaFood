@@ -1,10 +1,11 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, TextInput, Image } from "react-native";
-import Constants from "expo-constants";
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, TextInput, Image ,TouchableWithoutFeedback, Keyboard} from "react-native";
+
 import { Ionicons } from "@expo/vector-icons";
 import Fire from "../Fire";
 import * as ImagePicker from "expo-image-picker";
 import { getFirestore } from "firebase/firestore";
+import * as Device from 'expo-device';
 
 
 
@@ -19,7 +20,7 @@ export default class PostScreen extends React.Component {
     }
 
     getPhotoPermission = async () => {
-        if (Constants.platform.ios) {
+        if (Device.modelName) {
             const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
             if (status !== "granted") {
@@ -57,6 +58,7 @@ export default class PostScreen extends React.Component {
 
     render() {
         return (
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
             <SafeAreaView style={styles.container}>
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
@@ -91,6 +93,7 @@ export default class PostScreen extends React.Component {
                     <Image source={{ uri: this.state.image }} style={{ width: "100%", height: "100%", borderRadius: 6 }}></Image>
                 </View>
             </SafeAreaView>
+            </TouchableWithoutFeedback>
         );
     }
     

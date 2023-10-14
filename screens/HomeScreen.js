@@ -1,27 +1,20 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ImageBackground } from 'react-native';
-import { themeColors } from '../theme';
-import { useNavigation } from '@react-navigation/native';
+import { View, Text, StyleSheet, ImageBackground } from 'react-native';
 
-const HomeScreen = ({ navigation }) => {
-  const navigateToLogin = () => {
-    navigation.navigate('Login');
-  };
 
-  const navigateToSignUp = () => {
-    navigation.navigate('SignUp');
-  };
-
+const HomeScreen = () => {
   return (
+    // image en arrière plan et le titre
     <ImageBackground source={require('../assets/back.jpg')} resizeMode="cover" style={styles.backgroundImage}>
       <View style={styles.container}>
         <Text style={styles.text}>InstaFood</Text>
-        {/* Vos autres composants */}
+       
       </View>
     </ImageBackground>
   );
 };
 
+// le style de mes compsants
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -38,18 +31,6 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     height: '100%',
-  },
-  button: {
-    backgroundColor: themeColors.primary,
-    padding: 15,
-    borderRadius: 10,
-    width: 200,
-    alignItems: 'center',
-    marginVertical: 10,
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 16,
   },
 });
 

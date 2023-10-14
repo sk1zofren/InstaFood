@@ -74,7 +74,6 @@ class Fire {
     };
     
     
-
     addPost = async ({ text, localUri }) => {
         console.log("Début de addPost");
     
