@@ -1,5 +1,14 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Image,View, Text, FlatList, StatusBar, TouchableOpacity, TextInput, Button } from 'react-native';
+import {
+    Image,
+    View,
+    Text,
+    FlatList,
+    StatusBar,
+    TouchableOpacity,
+    TextInput,
+    Button
+} from 'react-native';
 import styled from "styled-components";
 import { getFirestore, collection, onSnapshot, doc, getDoc, getDocs } from 'firebase/firestore';
 import { app, auth } from '../firebase';
@@ -10,15 +19,9 @@ import { Ionicons, AntDesign } from "@expo/vector-icons";
 import { SignoutIcon } from 'react-native-heroicons/solid';
 import * as ImagePicker from 'expo-image-picker';
 
-
-
 const db = getFirestore(app);
 
 export default function WelcomeScreen() {
-
-
-
-
     const feedRef = useRef(null);
     const [commentTexts, setCommentTexts] = useState({});
     const [commentImageUri, setCommentImageUri] = useState(null);
@@ -26,6 +29,7 @@ export default function WelcomeScreen() {
     const [userDetails, setUserDetails] = useState(null);
     const [expandedPostId, setExpandedPostId] = useState(null);
 
+   
     useEffect(() => {
         const unsubscribe = onSnapshot(collection(db, 'posts'), async snapshot => {
             const fetchedPosts = await fetchAllDetails(snapshot);
@@ -38,6 +42,7 @@ export default function WelcomeScreen() {
         setCommentTexts(prev => ({ ...prev, [postId]: text }));
     };
 
+    // Récupération des détails de l'utilisateur
     const fetchUserDetails = async (uid, userCache) => {
         if (userCache[uid]) {
             return userCache[uid];
@@ -47,21 +52,22 @@ export default function WelcomeScreen() {
                 userCache[uid] = userDoc.data();
                 return userDoc.data();
             }
-            return null; // ou une structure d'utilisateur par défaut, si vous le souhaitez.
+            return null; 
         }
     };
-    
+
+    // Récupération des détails de tous les posts
     const fetchAllDetails = async (snapshot) => {
         const userCache = {};
         const fetchedPosts = [];
-    
+
         for (let docSnapshot of snapshot.docs) {
             const postData = { id: docSnapshot.id, ...docSnapshot.data() };
-    
-            // Get comments
+
+            // Récupérer les commentaires
             postData.comments = await fetchCommentsForPost(docSnapshot.id, userCache);
-    
-            // Get user details
+
+            // Récupérer les détails de l'utilisateur pour le post
             if (postData.uid) {
                 if (userCache[postData.uid]) {
                     postData.userDetails = userCache[postData.uid];
@@ -75,16 +81,18 @@ export default function WelcomeScreen() {
             }
             fetchedPosts.push(postData);
         }
+        // Trier les posts par date
         fetchedPosts.sort((a, b) => b.timestamp - a.timestamp);
         return fetchedPosts;
     };
-    
+
+    // Récupération des commentaires pour un post
     const fetchCommentsForPost = async (postId, userCache) => {
         const commentsSnapshot = await getDocs(collection(doc(db, 'posts', postId), 'comments'));
         const comments = [];
         for (let commentDoc of commentsSnapshot.docs) {
             const commentData = { id: commentDoc.id, ...commentDoc.data() };
-    
+
             // Récupération des détails de l'utilisateur pour le commentaire
             if (commentData.uid) {
                 commentData.userDetails = await fetchUserDetails(commentData.uid, userCache);
@@ -93,21 +101,20 @@ export default function WelcomeScreen() {
         }
         return comments;
     };
-    
-    
-    
-    
 
+    // Gérer la déconnexion
     const handleSignOut = () => {
         signOut(auth).catch((error) => {
             console.error("Erreur lors de la décconnexion : ", error);
         });
     };
 
-    const renderPost = ({ item, index }) => {  // ajout de l'index
+  
+    const renderPost = ({ item, index }) => {
         if (!item.userEmail || !item.text || !item.timestamp) {
             return null;
         }
+
         const handleRating = async (postId, ratingValue) => {
             await Fire.addRating(postId, ratingValue);
         };
@@ -121,7 +128,7 @@ export default function WelcomeScreen() {
                         key={i} 
                         onPress={() => {
                             handleRating(item.id, i);
-                            // Ajoutez ici l'animation de l'étoile si vous le souhaitez
+                            
                         }} 
                         style={{ marginHorizontal: 5 }}
                     >
@@ -216,7 +223,7 @@ export default function WelcomeScreen() {
                                     <Text style={{ fontWeight: 'bold' }}>{comment.userDetails?.fullName || 'Anonyme'}: </Text>
                                     <Text>{comment.text}</Text>
                                  
-                                    {/* Display comment image if exists */}
+                                    {/* afficher l'image si elle existe */}
                                     {comment.imageUrl && (
                                         
                                         <TouchableOpacity onPress={() => {
@@ -275,6 +282,7 @@ export default function WelcomeScreen() {
 }
 
 
+// style des composants
 
 const Container = styled(View)`
     flex: 1;

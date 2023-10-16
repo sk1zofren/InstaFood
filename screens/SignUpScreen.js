@@ -14,7 +14,7 @@ import defaultAvatar from '../assets/avata.png';
 
 
 import { auth, db } from '../firebase';
-import fireInstance from '../Fire';  // Assurez-vous que cela pointe vers votre classe Fire.
+import fireInstance from '../Fire'; 
 
 export default function SignUpScreen() {
     const navigation = useNavigation();
@@ -141,12 +141,12 @@ const handleSignUp = async () => {
   );
 }
 
-// ... autres imports ...
+
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#EAD9C0',  // Beige plus foncé
+    backgroundColor: '#EAD9C0',  
   },
    imagePlaceholderContainer: {
     alignSelf: 'center',

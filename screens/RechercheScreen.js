@@ -1,6 +1,15 @@
 import React from "react";
-import { View, Text, StyleSheet, TextInput, Button, FlatList, Modal, TouchableOpacity, Image } from "react-native";
-
+import {
+    View,
+    Text,
+    StyleSheet,
+    TextInput,
+    Button,
+    FlatList,
+    Modal,
+    TouchableOpacity,
+    Image
+} from "react-native";
 
 export default class RechercheScreen extends React.Component {
     state = {
@@ -11,18 +20,19 @@ export default class RechercheScreen extends React.Component {
     }
 
     componentDidMount() {
-        // Vérifiez si le composant a été ouvert à partir d'une notification
+        // Vérifie si le composant a été ouvert à partir d'une notification
         if (this.props.route.params && this.props.route.params.recipe) {
             const { recipe } = this.props.route.params;
             this.showModal(recipe);
         }
     }
-    
 
+    // connexion a l'API pour les recettes
     handleSearch = async () => {
+        
         const query = encodeURIComponent(this.state.searchText);
         const apiUrl = `https://www.themealdb.com/api/json/v1/1/search.php?s=${query}`;
-    
+
         try {
             const response = await fetch(apiUrl);
             const data = await response.json();
@@ -45,7 +55,6 @@ export default class RechercheScreen extends React.Component {
 
         return (
             <View style={styles.container}>
-                
                 <TextInput
                     style={styles.searchBar}
                     value={this.state.searchText}
@@ -53,11 +62,10 @@ export default class RechercheScreen extends React.Component {
                     placeholder="Recherchez une recette..."
                 />
                 <TouchableOpacity style={styles.button} onPress={this.handleSearch}>
-    <Text style={styles.buttonText}>Rechercher</Text>
-</TouchableOpacity>
+                    <Text style={styles.buttonText}>Rechercher</Text>
+                </TouchableOpacity>
 
-                
-                <FlatList 
+                <FlatList
                     data={this.state.searchResults}
                     renderItem={({ item }) => (
                         <TouchableOpacity style={styles.listItem} onPress={() => this.showModal(item)}>
@@ -76,7 +84,7 @@ export default class RechercheScreen extends React.Component {
                     >
                         <View style={styles.modalContainer}>
                             <View style={styles.modalContent}>
-                                <Image source={{uri: selectedMeal.strMealThumb}} style={styles.mealImage} />
+                                <Image source={{ uri: selectedMeal.strMealThumb }} style={styles.mealImage} />
                                 <Text style={styles.mealTitle}>{selectedMeal.strMeal}</Text>
                                 <Text>{selectedMeal.strInstructions}</Text>
                                 <Button title="Fermer" onPress={this.hideModal} color={styles.primary.color} />
@@ -87,13 +95,13 @@ export default class RechercheScreen extends React.Component {
             </View>
         );
     }
-    
 }
 
 const styles = StyleSheet.create({
+    // Style pour le bouton de recherche
     button: {
-        backgroundColor: '#5C4033',  // Marron foncé pour le bouton
-        width: 150,                 // Largeur fixe pour le bouton
+        backgroundColor: '#5C4033',
+        width: 150,
         paddingVertical: 8,
         borderRadius: 20,
         alignItems: 'center',
@@ -103,26 +111,19 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
-        alignSelf: 'center'         // Centre le bouton horizontalement
+        alignSelf: 'center'
     },
     buttonText: {
         color: '#FFFFFF',
         fontSize: 16,
         fontWeight: '500',
-    }
-,    
+    },
+    // Styles généraux pour le conteneur et les éléments d'interface utilisateur
     container: {
         flex: 1,
-        backgroundColor: '#D2B48C',  // Marron clair pour l'arrière-plan
+        backgroundColor: '#D2B48C',
         paddingHorizontal: 30,
         paddingTop: 50,
-    },
-    header: {
-        fontSize: 28,
-        fontWeight: '700',
-        marginBottom: 40,
-        color: '#FFFFFF',
-        textAlign: 'center',
     },
     searchBar: {
         width: '100%',
@@ -131,7 +132,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 10,
         marginBottom: 30,
-        backgroundColor: '#FFFFFF', 
+        backgroundColor: '#FFFFFF',
         elevation: 5,
         fontSize: 16,
     },
@@ -182,7 +183,7 @@ const styles = StyleSheet.create({
         marginBottom: 25,
     },
     primary: {
-        color: '#5C4033',  // Marron foncé pour le bouton
+        color: '#5C4033',
         fontSize: 18,
         fontWeight: '500',
     }
