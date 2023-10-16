@@ -75,6 +75,7 @@ export default function WelcomeScreen() {
             }
             fetchedPosts.push(postData);
         }
+        fetchedPosts.sort((a, b) => b.timestamp - a.timestamp);
         return fetchedPosts;
     };
     
@@ -99,7 +100,7 @@ export default function WelcomeScreen() {
 
     const handleSignOut = () => {
         signOut(auth).catch((error) => {
-            console.error("Erreur lors de la déconnexion : ", error);
+            console.error("Erreur lors de la décconnexion : ", error);
         });
     };
 
@@ -241,13 +242,13 @@ export default function WelcomeScreen() {
     onChangeText={text => setCommentTexts(prev => ({ ...prev, [item.id]: text }))}
     placeholder="Ajouter un commentaire..."
 />
-<StyledButton onPress={pickImage}>
-        <ButtonText>Choisir une image</ButtonText>
-    </StyledButton>
 
                     <StyledButton onPress={() => handleAddComment(item.id)}>
                         <ButtonText>Commenter</ButtonText>
                     </StyledButton>
+                    <StyledButton onPress={pickImage}>
+        <ButtonText>Choisir une image</ButtonText>
+    </StyledButton>
                 </View>
      
                 {renderStars(item.averageRating || 0)}
@@ -333,12 +334,13 @@ const CommentProfilePhoto = styled(Image)`
     margin-right: 8px;
 `;
 
-const PostPhoto = styled(Image)`
-    width: 100%;
-    height: 150px;
-    border-radius: 6px;
-    margin-top: 8px;
+const PostPhoto = styled.Image`
+    width: 300px; 
+    height: 300px; 
+    resize-mode: cover;
+    border-radius: 10px;
 `;
+
 
 const PostDetails = styled(View)`
     flex-direction: row;

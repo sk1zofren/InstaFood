@@ -33,8 +33,9 @@ export default class CrateRecetteScreen extends React.Component {
                 title: this.state.title, // Ajoutez le titre ici
                 text: this.state.text,
                 localUri: imageUri
-            });
-            alert("Recette ajoutée !");
+            }).then(ref => {
+                this.props.navigation.navigate('MyRecette');});
+           
             this.setState({ title: "", text: "", localUri: null }); // Réinitialisez le titre aussi
         } else {
             alert("Veuillez saisir un titre et une recette.");

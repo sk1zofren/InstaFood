@@ -90,7 +90,7 @@ name="y"
             }}
           />
           <Tab.Screen
-           name="t"
+           name="MyRecette"
             component={MyRecetteScreen}
             options={{
               tabBarLabel: () => null,
@@ -114,7 +114,7 @@ name="y"
             }}
           />
           <Tab.Screen
-           name="a"
+           name="Login"
             component={LoginScreen}
             options={{
               tabBarLabel: () => null,
@@ -124,7 +124,7 @@ name="y"
             }}
           />
           <Tab.Screen
-           name="e"
+           name="SignUp"
             component={SignUpScreen}
             options={{
               tabBarLabel: () => null,
@@ -215,7 +215,7 @@ export default function App() {
                   body: `A table !!!`,
                   data: { test: "data" }
               },
-              trigger: { seconds: 20 }
+              trigger: { seconds: 10 }
         });
       }
       } catch (error) {

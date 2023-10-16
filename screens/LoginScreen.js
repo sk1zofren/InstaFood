@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-nativ
 import { useNavigation } from '@react-navigation/native';
 import { auth } from '../firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
+import SignUpScreen from '../screens/SignUpScreen';
 
 export default function LoginScreen() {
 
