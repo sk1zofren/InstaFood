@@ -8,14 +8,14 @@ class Fire {
 
     addRating = async (postId, value) => {
         if (value < 1 || value > 5) {
-            console.error("Invalid star rating value");
+            console.error("Invalid ");
             return;
         }
     
         const ratingRef = doc(db, 'posts', postId, 'ratings', this.uid);
-        await setDoc(ratingRef, { uid: this.uid, value: value }, { merge: true }); // Changed starValue to value here
+        await setDoc(ratingRef, { uid: this.uid, value: value }, { merge: true });
     
-        // Mise à jour de la note moyenne du post et du nombre total de notes.
+        // on met à jour la note moyenne du post et le nombre total de notes
         const ratingsSnapshot = await getDocs(collection(db, 'posts', postId, 'ratings'));
         let totalRating = 0;
         ratingsSnapshot.forEach(doc => {
@@ -89,7 +89,19 @@ class Fire {
         } catch (error) {
             console.error("Erreur lors de la récupération des données de l'utilisateur :", error);
         }
-        
+        /*
+
+        Ici c'est je cree 2 images, 1 qui est redimentionner et une autre qui ne l'est pas,
+        le problème est que qu'a chaque fois que j'utilise une bibliothèque de redimensionnement,
+        j'ai des problème de dépendance. J'ai donc préférer le laisser en commentaire.
+
+
+        let originalUri = null;
+  let resizedUri = null;
+        const resizedImage = await ImageResizer.createResizedImage(localUri, 200, 200, 'JPEG', 80);
+        resizedUri = resizedImage.uri;
+        originalUri = localUri;
+*/
         let remoteUri = null;
         if (localUri) {
             console.log("Tentative d'upload de l'image...");
@@ -134,7 +146,7 @@ class Fire {
             await new Promise((resolve, reject) => {
                 uploadTask.on('state_changed', 
                     (snapshot) => { 
-                        // Vous pouvez ajouter une progression ici.
+                        
                     },
                     (error) => {
                         console.error("Erreur lors de l'upload:", error);

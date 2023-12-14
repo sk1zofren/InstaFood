@@ -15,8 +15,8 @@ export default function MyRecetteScreen() {
     // Etats pour les recettes et l'ID de recette sélectionné
     const [recettes, setRecettes] = useState([]);
     const [selectedRecetteId, setSelectedRecetteId] = useState(null);
-
-    // Charger les recettes lors du montage du composant
+    const title = <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#5C4033', textAlign: 'center' }}>Mes Recettes</Text>;
+    // Charger les recettes 
     useEffect(() => {
         const unsubscribe = onSnapshot(collection(db, 'recettes'), async snapshot => {
             // Récupération des recettes et informations de l'utilisateur
@@ -83,6 +83,7 @@ export default function MyRecetteScreen() {
 
     return (
         <Container>
+             {title}
             <RecettesFeed data={recettes} renderItem={renderRecette} keyExtractor={(item) => item.id.toString()} />
         </Container>
     );
@@ -92,7 +93,7 @@ export default function MyRecetteScreen() {
 const Container = styled.View`
     flex: 1;
     background-color: #DAC3A7;
-    padding-top: 20px;
+    padding-top: 45px;
 `;
 
 const RecettesFeed = styled(FlatList)`

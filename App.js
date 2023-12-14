@@ -17,6 +17,7 @@ import { auth } from './firebase';
 import * as Notifications from 'expo-notifications';
 import * as Permissions from 'expo-permissions';
 import { LogBox } from 'react-native';
+import * as ExpoConstants from 'expo-constants';
 
 
 
@@ -24,6 +25,8 @@ import { LogBox } from 'react-native';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 export const navigationRef = React.createRef();
+
+const PROJECT_ID = ExpoConstants?.manifest?.extra?.eas?.projectId;
 
 
 export function navigate(name, params) {
@@ -90,7 +93,7 @@ name="y"
             }}
           />
           <Tab.Screen
-           name="MyRecette"
+           name="t"
             component={MyRecetteScreen}
             options={{
               tabBarLabel: () => null,
@@ -114,7 +117,7 @@ name="y"
             }}
           />
           <Tab.Screen
-           name="Login"
+           name="a"
             component={LoginScreen}
             options={{
               tabBarLabel: () => null,
@@ -124,7 +127,7 @@ name="y"
             }}
           />
           <Tab.Screen
-           name="SignUp"
+           name="e"
             component={SignUpScreen}
             options={{
               tabBarLabel: () => null,
@@ -149,7 +152,7 @@ export default function App() {
     try {
         const response = await fetch(apiUrl);
         const data = await response.json();
-        return data.meals[0]; // Retournez la première (et unique) recette aléatoire obtenue
+        return data.meals[0]; 
     } catch (error) {
         
         return null;
@@ -169,11 +172,11 @@ export default function App() {
       Notifications.addNotificationResponseReceivedListener(async (response) => {
         console.log('Notification interaction:', response);
         
-        // Obtenez une recette aléatoire
+       
         const randomRecipe = await getRandomRecipe();
         
         if(randomRecipe && randomRecipe.idMeal) {
-            // Naviguez vers l'écran de recette avec l'ID de recette comme paramètre
+            
             navigate('Recherche', { recipe: randomRecipe });
         } else {
            
@@ -203,19 +206,37 @@ export default function App() {
           return;
         }
 
-        const token = await getExpoPushTokenAsync({ projectId: 'monappmobile-8f2a4' });
+        const token = (await Notifications.getExpoPushTokenAsync({ projectId: PROJECT_ID })).data;
 
         
         const randomRecipe = await getRandomRecipe();
-        // Planification de la notification
+
+        const currentDate = new Date();
+
+
+const hours = 12; 
+const minutes = 30; 
+
+
+const targetDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), hours, minutes);
+
+
+if (currentDate > targetDate) {
+  targetDate.setDate(targetDate.getDate() + 1);
+}
+
+
+const timeUntilNotification = targetDate.getTime() - currentDate.getTime();
+
+       
         if (randomRecipe && randomRecipe.strMeal) {
           await Notifications.scheduleNotificationAsync({
               content: {
                   title: "Recette du jour 🍽️",
-                  body: `A table !!!`,
+                  body: `Devine le plat du jour r`,
                   data: { test: "data" }
               },
-              trigger: { seconds: 10 }
+              trigger: { seconds: timeUntilNotification / 1000 }
         });
       }
       } catch (error) {

@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Button, TextInput, Image, TouchableOpacity, Scr
 import * as ImagePicker from 'expo-image-picker';
 import fireRecetteInstance from "../FireRecettes";
 
-// Composant de création de recette
+
 export default class CrateRecetteScreen extends React.Component {
     
     // Initialisation du state
@@ -15,49 +15,63 @@ export default class CrateRecetteScreen extends React.Component {
 
     // Fonction pour choisir une image depuis la bibliothèque de l'appareil
     pickImage = async () => {
+        // Lance la bibliothèque de sélection d'image asynchrone
         let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
+            mediaTypes: ImagePicker.MediaTypeOptions.Images, // Limite la sélection aux images
+            allowsEditing: true, 
+            aspect: [4, 3], // dimension de l'image
+            quality: 1, // qualité de l'image
         });
 
+        // Vérifie si l'utilisateur n'a pas annulé la sélection
         if (!result.cancelled) {
+            // Met à jour le state avec l'URI de l'image sélectionnée
             this.setState({ localUri: result.uri });
         }
     }
 
     // Fonction pour ajouter une recette
     handleAddRecette = async () => {
-        // Vérification si le titre et le texte ne sont pas vides
+       
         if (this.state.text.trim() !== "" && this.state.title.trim() !== "") {
             let imageUri = null;
+
+            // Vérifie si une image a été sélectionnée
             if (this.state.localUri) {
-                // Télécharge l'image sur FireRecettes
+                // Upload de l'image 
                 imageUri = await fireRecetteInstance.uploadPhotoAsync(this.state.localUri);
+            } else {
+                // Affiche une alerte si aucune image n'a été sélectionnée
+                alert("Veuillez sélectionner une image pour la recette.");
+                return; 
             }
-            // Ajoute la recette dans FireRecettes
-            await fireRecetteInstance.addRecette({
+
+            // Ajoute la recette dans FireRecettes avec le titre, le texte et l'URI de l'image
+            const newRecetteId = await fireRecetteInstance.addRecette({
                 title: this.state.title,
                 text: this.state.text,
                 localUri: imageUri
-            }).then(ref => {
-                this.props.navigation.navigate('MyRecette');
             });
             
-            // Réinitialise le state après l'ajout
+            // Navigue vers l'écran 'MyRecette' après avoir ajouté la recette
+           alert("La recette a été ajoutée avec succès")
+
+            
             this.setState({ title: "", text: "", localUri: null });
         } else {
+            // Affiche une alerte si le titre ou le texte sont vides
             alert("Veuillez saisir un titre et une recette.");
         }
-    }
+    };
+      
 
     // Rendu du composant
     render() {
         return (
             <ScrollView contentContainerStyle={styles.container}>
 
-                {/* Champ de saisie du titre */}
+               
+               
                 <TextInput 
                     placeholder="Titre de la recette"
                     style={styles.textInput}
@@ -65,7 +79,7 @@ export default class CrateRecetteScreen extends React.Component {
                     onChangeText={(title) => this.setState({ title })}
                 />
                 
-                {/* Champ de saisie de la description de la recette */}
+               
                 <TextInput 
                     placeholder="Saisissez votre recette..."
                     style={styles.textArea}
@@ -74,7 +88,7 @@ export default class CrateRecetteScreen extends React.Component {
                     multiline={true}
                 />
                 
-                {/* Affichage de l'image si elle est choisie, sinon affiche le bouton pour choisir une image */}
+               
                 {this.state.localUri ? (
                     <Image source={{ uri: this.state.localUri }} style={styles.recipeImage} />
                 ) : (
@@ -83,7 +97,7 @@ export default class CrateRecetteScreen extends React.Component {
                     </TouchableOpacity>
                 )}
                 
-                {/* Bouton pour ajouter la recette */}
+                
                 <TouchableOpacity style={styles.button} onPress={this.handleAddRecette}>
                     <Text style={styles.buttonText}>Ajouter la recette</Text>
                 </TouchableOpacity>

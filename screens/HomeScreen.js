@@ -17,9 +17,9 @@ const HomeScreen = () => {
   );
 };
 
-// Définition des styles des composants
+
 const styles = StyleSheet.create({
-  // Style du conteneur principal
+ 
   container: {
     flex: 1,
     justifyContent: 'center',

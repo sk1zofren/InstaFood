@@ -51,7 +51,7 @@ export default function LoginScreen() {
           value={password}
           onChangeText={text => setPassword(text)}
         />
-        {/* Affichage du message d'erreur si nécessaire */}
+      
         {errorMessage ? <Text style={styles.errorMessage}>{errorMessage}</Text> : null}
         <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
           <Text style={styles.loginButtonText}>Se connecter</Text>

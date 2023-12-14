@@ -28,6 +28,7 @@ export default function WelcomeScreen() {
     const [posts, setPosts] = useState([]);
     const [userDetails, setUserDetails] = useState(null);
     const [expandedPostId, setExpandedPostId] = useState(null);
+    const title = <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#5C4033', textAlign: 'center' }}>Pour toi</Text>;
 
    
     useEffect(() => {
@@ -273,6 +274,7 @@ export default function WelcomeScreen() {
         </StyledSignoutButton>
         <FeedContainer>
             <Text style={{ fontSize: 15, fontWeight: "bold", textAlign: 'center', marginBottom: 20 }}></Text>
+            {title}
             <Feed data={posts} renderItem={renderPost} keyExtractor={(item) => item.id.toString()} />
         </FeedContainer>
         <StatusBar barStyle="dark-content" />
@@ -440,8 +442,4 @@ const InactiveStar = styled(AntDesign)`
     color: lightgray;
 `;
 
-
-
-
-// ... The rest of the code ...
 

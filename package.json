@@ -17,6 +17,7 @@
     "@react-navigation/native": "^6.0.2",
     "@react-navigation/native-stack": "^6.1.0",
     "expo": "~48.0.2",
+    "expo-device": "~5.2.1",
     "expo-image-picker": "~14.1.1",
     "expo-notifications": "^0.18.1",
     "expo-permissions": "~14.1.1",
@@ -26,9 +27,9 @@
     "moment": "^2.29.4",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-native": "0.71.13",
+    "react-native": "0.71.14",
     "react-native-heroicons": "^3.2.0",
-    "react-native-image-picker": "^7.0.0",
+    "react-native-image-picker": "^7.0.2",
     "react-native-ionicons": "^4.6.5",
     "react-native-push-notification": "^8.1.1",
     "react-native-ratings": "^8.1.0",
@@ -36,8 +37,7 @@
     "react-native-screens": "~3.20.0",
     "react-native-web": "~0.18.10",
     "react-navigation-tabs": "^2.11.2",
-    "styled-components": "^6.0.8",
-    "expo-device": "~5.2.1"
+    "styled-components": "^6.0.8"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

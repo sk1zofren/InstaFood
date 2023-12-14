@@ -50,6 +50,7 @@ export default class RechercheScreen extends React.Component {
         this.setState({ modalVisible: false, selectedMeal: null });
     }
 
+    //sa c'est le rendu
     render() {
         const { modalVisible, selectedMeal } = this.state;
 
@@ -118,7 +119,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '500',
     },
-    // Styles généraux pour le conteneur et les éléments d'interface utilisateur
+   
     container: {
         flex: 1,
         backgroundColor: '#D2B48C',

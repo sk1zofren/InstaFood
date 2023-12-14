@@ -39,6 +39,8 @@ export default class PostScreen extends React.Component {
 
    
     handlePost = () => {
+        if (this.state.text.trim() !== "" && this.state.image  ) {
+               
         Fire.addPost({ text: this.state.text.trim(), localUri: this.state.image })
             .then(ref => {
                 this.setState({ text: "", image: null });
@@ -47,6 +49,11 @@ export default class PostScreen extends React.Component {
             .catch(error => {
                 alert(error);
             });
+                   
+        }else{
+            alert("Veuillez remplir les champs");
+        }
+        
     };
 
     // Permet de choisir une image depuis la galerie
