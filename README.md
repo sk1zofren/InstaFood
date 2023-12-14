@@ -1,4 +1,5 @@
-![image](https://github.com/sk1zofren/MobileProject/assets/120064745/375ef29a-ac31-48c9-b743-c57f7d05b5b7)
+  ![image](https://github.com/sk1zofren/MobileProject/assets/120064745/9dc1472a-15c3-4fed-ae92-5bb3018e4d52)
+
 
 
 
