@@ -4,7 +4,7 @@ import { getFirestore } from 'firebase/firestore';
 import { getAnalytics } from 'firebase/analytics';
 import { getStorage } from 'firebase/storage';
 
-// Your web app's Firebase configuration
+// sa c'est la config firebase
 const firebaseConfig = {
   apiKey: "AIzaSyCl37bPaoWaI_3506To8M-KrS672HHEn18",
   authDomain: "monappmobile-8f2a4.firebaseapp.com",
@@ -17,7 +17,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Obtenez l'objet d'authentification Firebase
+
 const auth = getAuth(app);
 
 // Export Firestore

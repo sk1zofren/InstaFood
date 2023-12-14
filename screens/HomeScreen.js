@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, ImageBackground } from 'react-native';
 // Composant de l'écran d'accueil
 const HomeScreen = () => {
   return (
-    // Utilisation d'une image en arrière-plan 
+    
     <ImageBackground 
       source={require('../assets/back.jpg')} 
       resizeMode="cover" 

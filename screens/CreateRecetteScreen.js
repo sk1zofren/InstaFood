@@ -15,7 +15,7 @@ export default class CrateRecetteScreen extends React.Component {
 
     // Fonction pour choisir une image depuis la bibliothèque de l'appareil
     pickImage = async () => {
-        // Lance la bibliothèque de sélection d'image asynchrone
+       
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images, // Limite la sélection aux images
             allowsEditing: true, 
@@ -23,7 +23,7 @@ export default class CrateRecetteScreen extends React.Component {
             quality: 1, // qualité de l'image
         });
 
-        // Vérifie si l'utilisateur n'a pas annulé la sélection
+        // Vérifie si l'utilisateur a annulé la sélection
         if (!result.cancelled) {
             // Met à jour le state avec l'URI de l'image sélectionnée
             this.setState({ localUri: result.uri });
@@ -36,12 +36,12 @@ export default class CrateRecetteScreen extends React.Component {
         if (this.state.text.trim() !== "" && this.state.title.trim() !== "") {
             let imageUri = null;
 
-            // Vérifie si une image a été sélectionnée
+            // Vérifie si une image a été sélectionn
             if (this.state.localUri) {
                 // Upload de l'image 
                 imageUri = await fireRecetteInstance.uploadPhotoAsync(this.state.localUri);
             } else {
-                // Affiche une alerte si aucune image n'a été sélectionnée
+               
                 alert("Veuillez sélectionner une image pour la recette.");
                 return; 
             }
@@ -53,13 +53,13 @@ export default class CrateRecetteScreen extends React.Component {
                 localUri: imageUri
             });
             
-            // Navigue vers l'écran 'MyRecette' après avoir ajouté la recette
+            
            alert("La recette a été ajoutée avec succès")
 
             
             this.setState({ title: "", text: "", localUri: null });
         } else {
-            // Affiche une alerte si le titre ou le texte sont vides
+           
             alert("Veuillez saisir un titre et une recette.");
         }
     };
